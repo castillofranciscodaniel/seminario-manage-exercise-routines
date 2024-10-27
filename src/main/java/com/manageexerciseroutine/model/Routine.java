@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Exercise {
+public class Routine {
     private int id;
     private String name;
     private String description;
     private int duration;
-    private String type;
+    private String difficultyLevel;
+    private String trainingType;
+    private int trainerId;
 }
