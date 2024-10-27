@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      alignment="CENTER" spacing="10" padding="20">
+
+    <Label text="My Routines" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <TableView fx:id="routineTable">
+        <columns>
+            <TableColumn fx:id="nameColumn" text="Routine Name"/>
+            <TableColumn fx:id="descriptionColumn" text="Description"/>
+            <TableColumn fx:id="durationColumn" text="Duration (min)"/>
+        </columns>
+    </TableView>
+
+    <Button text="Create New Routine" onAction="#handleCreateRoutine" />
+    <Button text="Edit Routine" onAction="#handleEditRoutine" />
+    <Button text="Delete Routine" onAction="#handleDeleteRoutine" />
+</VBox>

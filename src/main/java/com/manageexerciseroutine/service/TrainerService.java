@@ -37,4 +37,8 @@ public class TrainerService {
     public List<Trainer> getTrainersBySpecialty(String specialty) throws SQLException {
         return trainerRepository.findBySpecialty(specialty);
     }
+
+    public Trainer loginTrainer(String email, String password) throws SQLException {
+        return trainerRepository.findByEmailAndPassword(email, password);
+    }
 }

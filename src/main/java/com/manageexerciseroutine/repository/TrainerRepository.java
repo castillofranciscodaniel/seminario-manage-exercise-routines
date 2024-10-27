@@ -17,4 +17,6 @@ public interface TrainerRepository {
     List<Trainer> findBySpecialty(String specialty) throws SQLException;
 
     void save(Trainer trainer) throws SQLException;
+
+    Trainer findByEmailAndPassword(String email, String password) throws SQLException;
 }

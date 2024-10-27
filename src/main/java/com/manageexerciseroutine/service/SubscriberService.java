@@ -37,4 +37,8 @@ public class SubscriberService {
     public List<Subscriber> getSubscribersByRegistrationDate(String date) throws SQLException {
         return subscriberRepository.findByRegistrationDate(date);
     }
+
+    public Subscriber loginSubscriber(String email, String password) throws SQLException {
+        return subscriberRepository.findByEmailAndPassword(email, password);
+    }
 }

@@ -12,4 +12,10 @@ public class User {
     protected String name;
     protected String email;
     protected String password;
+
+    public User(int trainerId, String trainerName, String trainerEmail) {
+        this.id = trainerId;
+        this.name = trainerName;
+        this.email = trainerEmail;
+    }
 }

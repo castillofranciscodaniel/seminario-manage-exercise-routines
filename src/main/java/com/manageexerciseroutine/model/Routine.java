@@ -14,5 +14,5 @@ public class Routine {
     private int duration;
     private String difficultyLevel;
     private String trainingType;
-    private int trainerId;
+    private Trainer trainer;
 }

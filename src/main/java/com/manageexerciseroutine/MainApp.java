@@ -25,14 +25,20 @@ public class MainApp extends Application {
         trainerService = new TrainerService(trainerRepository);
         subscriberService = new SubscriberService(subscriberRepository);
 
-        // Cargar el controlador de login
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/login_view.fxml"));
-        LoginController loginController = new LoginController(trainerService, subscriberService);
-        loader.setController(loginController);
+        // Crear el FXMLLoader
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/login_view.fxml"));
 
-        Parent root = loader.load();
+        // Inyectar el controlador con dependencias antes de cargar la vista
+        LoginController loginController = new LoginController(trainerService, subscriberService);
+        loader.setController(loginController);  // Especificar el controlador aquí
+
+        // Cargar la vista
+        Parent root = loader.load();  // Cargar la vista FXML después de especificar el controlador
+
+        // Configurar la escena
         primaryStage.setTitle("Login");
-        primaryStage.setScene(new Scene(root, 400, 300));
+        primaryStage.setScene(new Scene(root, 400, 400));
         primaryStage.show();
     }
 

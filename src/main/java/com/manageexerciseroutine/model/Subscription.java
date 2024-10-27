@@ -14,6 +14,6 @@ public class Subscription {
     private Date startDate;
     private Date endDate;
     private String status;
-    private int userId;
-    private int routineId;
+    private Subscriber subscriber;
+    private Routine routine;
 }

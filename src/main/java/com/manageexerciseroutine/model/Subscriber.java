@@ -16,4 +16,9 @@ public class Subscriber extends User {
         super(id, name, email, password);
         this.registrationDate = registrationDate;
     }
+
+    public Subscriber(int subscriberId, String subscriberName, String subscriberEmail, java.sql.Date registrationDate) {
+        super(subscriberId, subscriberName, subscriberEmail);
+        this.registrationDate = new Date(registrationDate.getTime());
+    }
 }

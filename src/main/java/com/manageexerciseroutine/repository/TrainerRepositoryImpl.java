@@ -122,4 +122,29 @@ public class TrainerRepositoryImpl implements TrainerRepository {
         }
         return trainers;
     }
+
+    @Override
+    public Trainer findByEmailAndPassword(String email, String password) throws SQLException {
+        String query = "SELECT * FROM Trainers WHERE email = ? AND password = ?";
+        Trainer trainer = null;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            statement.setString(2, password);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    trainer = new Trainer(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("password"),
+                            resultSet.getString("specialty"),
+                            resultSet.getString("biography")
+                    );
+                }
+            }
+        }
+        return trainer;
+    }
 }

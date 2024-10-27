@@ -14,6 +14,6 @@ public class Evaluation {
     private int rating;
     private String comment;
     private Date date;
-    private int subscriberId;
-    private int routineId;
+    private Subscriber subscriber;
+    private Routine routine;
 }

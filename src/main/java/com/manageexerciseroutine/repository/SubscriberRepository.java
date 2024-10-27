@@ -17,4 +17,6 @@ public interface SubscriberRepository {
     void delete(int id) throws SQLException;
 
     List<Subscriber> findByRegistrationDate(String date) throws SQLException;
+
+    Subscriber findByEmailAndPassword(String email, String password) throws SQLException;
 }

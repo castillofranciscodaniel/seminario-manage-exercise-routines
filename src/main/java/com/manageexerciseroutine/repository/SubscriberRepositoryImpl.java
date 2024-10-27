@@ -117,4 +117,28 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
         }
         return subscribers;
     }
+
+    @Override
+    public Subscriber findByEmailAndPassword(String email, String password) throws SQLException {
+        String query = "SELECT * FROM Subscribers WHERE email = ? AND password = ?";
+        Subscriber subscriber = null;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, email);
+            statement.setString(2, password);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    subscriber = new Subscriber(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("password"),
+                            resultSet.getDate("registrationDate")
+                    );
+                }
+            }
+        }
+        return subscriber;
+    }
 }

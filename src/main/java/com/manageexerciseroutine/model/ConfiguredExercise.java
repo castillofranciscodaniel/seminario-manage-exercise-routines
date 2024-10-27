@@ -11,6 +11,6 @@ public class ConfiguredExercise {
     private int orderIndex;
     private int repetitions;
     private int series;
-    private int exerciseId;
-    private int routineId;
+    private Exercise exercise;
+    private Routine routine;
 }
