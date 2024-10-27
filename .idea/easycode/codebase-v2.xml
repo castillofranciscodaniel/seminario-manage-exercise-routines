@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="com.obiscr.chatgpt.settings.EasyCodeState">
+    <option name="projectFiles" value="$PROJECT_DIR$/src/main/java/com/manageexerciseroutine/controller/ExerciseController.java;/home/fraaaan/projects/seminario-manage-exercise-routines/manageexerciseroutine/src/main/java/com/manageexerciseroutine/model/Exercise.java;/home/fraaaan/projects/seminario-manage-exercise-routines/manageexerciseroutine/src/main/java/com/manageexerciseroutine/repository/ExerciseRepository.java;/home/fraaaan/projects/seminario-manage-exercise-routines/manageexerciseroutine/src/main/java/com/manageexerciseroutine/repository/ExerciseRepositoryImpl.java;/home/fraaaan/projects/seminario-manage-exercise-routines/manageexerciseroutine/src/main/java/com/manageexerciseroutine/service/ExerciseService.java;/home/fraaaan/projects/seminario-manage-exercise-routines/manageexerciseroutine/src/main/java/com/manageexerciseroutine/MainApp.java;/home/fraaaan/projects/seminario-manage-exercise-routines/manageexerciseroutine/pom.xml" />
+  </component>
+</project>

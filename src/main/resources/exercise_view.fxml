@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="10" alignment="CENTER" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="ExerciseController">
+    <TextField fx:id="nameField" promptText="Exercise Name"/>
+    <TextField fx:id="descriptionField" promptText="Description"/>
+    <TextField fx:id="durationField" promptText="Duration (minutes)"/>
+    <TextField fx:id="typeField" promptText="Type (e.g., Strength, Cardio)"/>
+    <Button text="Add Exercise" onAction="#addExercise"/>
+    <ListView fx:id="exerciseList"/>
+    <Button text="Delete Selected Exercise" onAction="#deleteExercise"/>
+</VBox>
