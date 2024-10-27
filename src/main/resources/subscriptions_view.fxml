@@ -2,18 +2,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      alignment="CENTER" spacing="10" padding="20">
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
 
-    <Label text="My Subscriptions" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
 
     <TableView fx:id="subscriptionTable">
         <columns>
-            <TableColumn fx:id="routineNameColumn" text="Routine Name"/>
-            <TableColumn fx:id="startDateColumn" text="Start Date"/>
-            <TableColumn fx:id="endDateColumn" text="End Date"/>
+            <TableColumn fx:id="routineNameColumn" text="Routine Name" />
+            <TableColumn fx:id="durationColumn" text="Duration" />
         </columns>
     </TableView>
 
-    <Button text="Cancel Subscription" onAction="#handleCancelSubscription" />
 </VBox>

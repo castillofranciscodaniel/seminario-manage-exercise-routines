@@ -10,7 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SubscriptionRepositoryImpl {
+public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
     public List<Subscription> findBySubscriberId(int subscriberId) throws SQLException {
         String query = "SELECT s.id, s.startDate, s.endDate, s.status, " +
@@ -18,10 +18,10 @@ public class SubscriptionRepositoryImpl {
                 "r.id as id, r.name, r.description, r.duration, r.difficultyLevel, r.trainingType, " +
                 "t.id as id, t.name as trainerName, t.email as trainerEmail, t.specialty, t.biography " +
                 "FROM Subscriptions s " +
-                "JOIN Subscribers sub ON s.subscriber_id = sub.id " +
+                "JOIN Subscribers sub ON s.user_id = sub.id " +
                 "JOIN Routines r ON s.routine_id = r.id " +
                 "JOIN Trainers t ON r.trainer_id = t.id " +
-                "WHERE s.subscriber_id = ?";
+                "WHERE s.user_id = ?";
 
         List<Subscription> subscriptions = new ArrayList<>();
 
@@ -74,6 +74,7 @@ public class SubscriptionRepositoryImpl {
         return subscriptions;
     }
 
+    @Override
     public void save(Subscription subscription) throws SQLException {
         String query = "INSERT INTO Subscriptions (startDate, endDate, status, subscriber_id, routine_id) VALUES (?, ?, ?, ?, ?)";
 
@@ -88,6 +89,7 @@ public class SubscriptionRepositoryImpl {
         }
     }
 
+    @Override
     public void update(Subscription subscription) throws SQLException {
         String query = "UPDATE Subscriptions SET startDate = ?, endDate = ?, status = ?, subscriber_id = ?, routine_id = ? WHERE id = ?";
 
@@ -103,6 +105,7 @@ public class SubscriptionRepositoryImpl {
         }
     }
 
+    @Override
     public void delete(Subscription subscription) throws SQLException {
         String query = "DELETE FROM Subscriptions WHERE id = ?";
 
