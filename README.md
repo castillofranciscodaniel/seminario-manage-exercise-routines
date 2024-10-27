@@ -1,1 +1,0 @@
-# seminario-manage-exercise-routines
