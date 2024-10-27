@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      spacing="10" alignment="CENTER" style="-fx-padding: 10;">
+
+    <TableView fx:id="exerciseTable" prefWidth="600">
+        <!-- Columna para el nombre del ejercicio -->
+        <columns>
+            <TableColumn text="Exercise Name" fx:id="exerciseNameColumn" prefWidth="150"/>
+            <TableColumn text="Order" fx:id="orderColumn" prefWidth="100"/>
+            <TableColumn text="Repetitions" fx:id="repetitionsColumn" prefWidth="100"/>
+            <TableColumn text="Series" fx:id="seriesColumn" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+</VBox>
