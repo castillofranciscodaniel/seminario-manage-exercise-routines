@@ -5,8 +5,11 @@ import com.manageexerciseroutine.model.Trainer;
 import com.manageexerciseroutine.model.Subscriber;
 import com.manageexerciseroutine.model.Routine;
 import com.manageexerciseroutine.model.Subscription;
+import com.manageexerciseroutine.repository.RoutineRepository;
+import com.manageexerciseroutine.repository.RoutineRepositoryImpl;
 import com.manageexerciseroutine.repository.SubscriptionRepository;
 import com.manageexerciseroutine.repository.SubscriptionRepositoryImpl;
+import com.manageexerciseroutine.service.RoutineService;
 import com.manageexerciseroutine.service.SubscriptionService;
 import com.manageexerciseroutine.service.TrainerService;
 import com.manageexerciseroutine.service.SubscriberService;
@@ -74,15 +77,27 @@ public class LoginController {
         }
     }
 
-    private void redirectToRoutines(int userId) throws Exception {
+    private void redirectToRoutines(int trainerId) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/routines_view.fxml"));
 
-        Parent root = loader.load();  // Cargar la vista sin necesidad de pasar rutinas
+        // Crear el repositorio y el servicio
+        RoutineRepository routineRepository = new RoutineRepositoryImpl();
+        RoutineService routineService = new RoutineService(routineRepository);
+
+        // Crear el controlador manualmente con el trainerId y el RoutineService
+        RoutineController controller = new RoutineController(routineService, trainerId);
+        loader.setController(controller);  // Asignar el controlador manualmente
+
+        // Cargar la vista
+        Parent root = loader.load();
+
+        // Mostrar la ventana
         Stage stage = new Stage();
         stage.setTitle("My Routines");
         stage.setScene(new Scene(root, 600, 400));
         stage.show();
     }
+
 
     private void redirectToSubscriptions(int userId) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/subscriptions_view.fxml"));

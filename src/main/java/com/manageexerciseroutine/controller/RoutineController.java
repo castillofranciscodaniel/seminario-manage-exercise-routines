@@ -31,20 +31,22 @@ public class RoutineController {
     private final RoutineService routineService;
     private final ObservableList<Routine> routineData = FXCollections.observableArrayList();
 
-    public RoutineController(RoutineService routineService) {
+    private final int trainerId; // ID del entrenador logueado
+
+    public RoutineController(RoutineService routineService, int trainerId) {
         this.routineService = routineService;
+        this.trainerId = trainerId;
     }
 
     @FXML
     public void initialize() throws SQLException {
-        // Configurar la tabla para mostrar los datos de las rutinas
+        // Inicializar columnas
         nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         descriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
-        // Usar SimpleIntegerProperty para valores numéricos
         durationColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getDuration()).asObject());
 
-        // Cargar las rutinas desde el servicio
-        List<Routine> routines = routineService.findAllRoutines();
+        // Buscar rutinas del entrenador logueado
+        List<Routine> routines = routineService.findRoutinesByTrainerId(trainerId);
         routineData.addAll(routines);
         routineTable.setItems(routineData);
     }

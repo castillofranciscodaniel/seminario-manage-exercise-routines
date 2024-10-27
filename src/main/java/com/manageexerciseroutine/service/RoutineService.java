@@ -30,4 +30,8 @@ public class RoutineService {
     public void deleteRoutine(Routine routine) throws SQLException {
         routineRepository.delete(routine);
     }
+
+    public List<Routine> findRoutinesByTrainerId(int trainerId) throws SQLException {
+        return routineRepository.findByTrainerId(trainerId);
+    }
 }

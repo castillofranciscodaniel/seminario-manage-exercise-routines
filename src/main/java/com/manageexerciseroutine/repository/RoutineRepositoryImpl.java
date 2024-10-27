@@ -131,4 +131,29 @@ public class RoutineRepositoryImpl implements RoutineRepository {
         }
         return null;  // Retorna null si no se encuentra la rutina con el id proporcionado
     }
+
+    @Override
+    public List<Routine> findByTrainerId(int trainerId) throws SQLException {
+        String query = "SELECT id, name, description, duration FROM Routines WHERE trainer_id = ?";
+
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, trainerId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<Routine> routines = new ArrayList<>();
+                while (resultSet.next()) {
+                    Routine routine = new Routine(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("description"),
+                            resultSet.getInt("duration"),
+                            null, null, null
+                    );
+                    routines.add(routine);
+                }
+                return routines;
+            }
+        }
+    }
 }

@@ -21,4 +21,7 @@ public interface RoutineRepository {
 
     // Método para encontrar una rutina por su ID
     Routine findById(int id) throws SQLException;
+
+    List<Routine> findByTrainerId(int trainerId) throws SQLException;
+
 }
