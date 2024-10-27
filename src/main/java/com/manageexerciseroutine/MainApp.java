@@ -11,10 +11,10 @@ import java.net.URL;
 public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        URL fxmlURL = getClass().getResource("/exercise_view.fxml");
-        System.out.println("Fran:" + fxmlURL);
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/exercise_view.fxml"));
+        Parent root = loader.load();
 
-        Parent root = FXMLLoader.load(getClass().getResource("/exercise_view.fxml"));
         primaryStage.setTitle("Exercise Management");
         primaryStage.setScene(new Scene(root, 400, 400));
         primaryStage.show();

@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox spacing="10" alignment="CENTER" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="ExerciseController">
+      fx:controller="com.manageexerciseroutine.controller.ExerciseController">
     <TextField fx:id="nameField" promptText="Exercise Name"/>
     <TextField fx:id="descriptionField" promptText="Description"/>
     <TextField fx:id="durationField" promptText="Duration (minutes)"/>

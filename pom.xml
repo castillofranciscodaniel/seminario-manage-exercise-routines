@@ -64,7 +64,7 @@
 
         <resources>
             <resource>
-                <directory>src/main/custom-resources</directory>
+                <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*</include>
                 </includes>
