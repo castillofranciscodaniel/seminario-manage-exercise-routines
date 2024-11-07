@@ -10,9 +10,9 @@
     <TableView fx:id="exerciseTable" prefWidth="600">
         <!-- Columna para el nombre del ejercicio -->
         <columns>
-            <TableColumn text="Exercise Name" fx:id="exerciseNameColumn" prefWidth="150"/>
-            <TableColumn text="Order" fx:id="orderColumn" prefWidth="100"/>
-            <TableColumn text="Repetitions" fx:id="repetitionsColumn" prefWidth="100"/>
+            <TableColumn text="Nombre de Ejercicio" fx:id="exerciseNameColumn" prefWidth="150"/>
+            <TableColumn text="Orden" fx:id="orderColumn" prefWidth="100"/>
+            <TableColumn text="Repeticiones" fx:id="repetitionsColumn" prefWidth="100"/>
             <TableColumn text="Series" fx:id="seriesColumn" prefWidth="100"/>
         </columns>
     </TableView>

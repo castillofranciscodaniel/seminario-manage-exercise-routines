@@ -10,20 +10,19 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import lombok.Data;
-import lombok.Getter;
 
+import java.io.IOException;
+import java.net.URL;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 
-@Data
-public class ExerciseController {
-
-    Logger logger = Logger.getLogger(ExerciseController.class.getName());
-
+public class ExerciseABMController {
 
     @FXML
     private TableView<Exercise> exerciseTable;
@@ -40,73 +39,61 @@ public class ExerciseController {
     @FXML
     private TableColumn<Exercise, String> typeColumn;
 
-    @FXML
-    private TextField nameField;
-
-    @FXML
-    private TextArea descriptionField;
-
-    @FXML
-    private TextField durationField;
-
-    @FXML
-    private ComboBox<String> typeComboBox;
-
-    @FXML
-    private TableColumn<Exercise, String> trainerColumn; // Columna para mostrar el nombre del Trainer
+    private final TrainerService trainerService; // Instancia del servicio de entrenadores
 
     private final ObservableList<Exercise> exerciseData = FXCollections.observableArrayList();
     private final ExerciseService exerciseService;
-
-    private Trainer trainer;
+    private final int trainerId;  // Recibir trainerId para gestión específica
+    Trainer trainer;  // Entrenador actual
 
     // Constructor con inyección de servicios y trainerId
-    public ExerciseController(Trainer trainer) {
-        this.exerciseService = new ExerciseService();
-        this.trainer = trainer;
-    }
-
-    @FXML
-    public void initialize() throws DatabaseOperationException {
-
-        typeComboBox.setItems(FXCollections.observableArrayList(
-                "Strength", "Yoga", "Cardio", "Core", "Full-body"
-        ));
-    }
-
-    @FXML
-    public void handleSaveExercise() {
+    public ExerciseABMController(int trainerId) {
+        this.trainerId = trainerId;
+        this.trainerService = new TrainerService();
+        this.exerciseService = new ExerciseService();  // Instancia del servicio de ejercicios
         try {
-            // Capturar datos de los campos
-            String name = nameField.getText();
-            String description = descriptionField.getText();
-            int duration = Integer.parseInt(durationField.getText());
-            String type = typeComboBox.getValue(); // Obtener el valor seleccionado en el ComboBox
-
-            // Verificar si se seleccionó un tipo de ejercicio
-            if (type == null) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Por favor selecciona un tipo de ejercicio.");
-                return;
-            }
-
-            // Crear y guardar el ejercicio
-            Exercise exercise = new Exercise();
-            exercise.setName(name);
-            exercise.setDescription(description);
-            exercise.setDuration(duration);
-            exercise.setType(type);
-            exercise.setTrainer(trainer);
-
-            exerciseService.saveExercise(exercise);
-            showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Ejercicio creado exitosamente!");
-
-            // Cerrar el diálogo
-            Stage stage = (Stage) nameField.getScene().getWindow();
-            stage.close();
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Duración inválida. Por favor ingresa un número.");
+            this.trainer = trainerService.getTrainerById(trainerId);
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo guardar el ejercicio: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo encontrar al entrenador.");
+        }
+    }
+
+    @FXML
+    public void initialize() throws SQLException {
+        // Inicializar columnas de la tabla
+        nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
+        descriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
+        durationColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getDuration()).asObject());
+        typeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getType()));
+
+        // Cargar ejercicios del sistema (en este caso, no filtramos por trainerId, ya que todos los ejercicios son accesibles)
+        List<Exercise> exercises = exerciseService.findAllExercisesByTrainerId(trainerId);
+        exerciseData.addAll(exercises);
+        exerciseTable.setItems(exerciseData);
+    }
+
+    // Crear un nuevo ejercicio
+    @FXML
+    public void handleCreateExercise() throws DatabaseOperationException {
+        try {
+            URL url = getClass().getResource("/create_exercise_view.fxml");
+            System.out.println("Fran. url: " + url);
+            FXMLLoader loader = new FXMLLoader(url);
+
+            // Obtener el controlador de la vista de creación de ejercicio
+            ExerciseController controller = new ExerciseController(trainer);
+
+            loader.setController(controller);
+
+            Parent root = loader.load();
+            // Configurar la escena y mostrar la nueva ventana
+            Stage stage = new Stage();
+            stage.setTitle("Crear Ejercicio");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de creación de ejercicio.");
         }
     }
 
@@ -117,9 +104,7 @@ public class ExerciseController {
         if (selectedExercise != null) {
             Exercise updatedExercise = showExerciseDialog(selectedExercise);
             if (updatedExercise != null) {
-                // Actualiza el ejercicio en la base de datos
                 exerciseService.updateExercise(updatedExercise);
-                // Refresca la tabla de ejercicios
                 exerciseTable.refresh();
             }
         } else {
@@ -134,9 +119,7 @@ public class ExerciseController {
         if (selectedExercise != null) {
             Optional<ButtonType> result = showAlert(Alert.AlertType.CONFIRMATION, "Confirm Delete", "Are you sure you want to delete this exercise?");
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                // Elimina el ejercicio de la base de datos
                 exerciseService.deleteExercise(selectedExercise);
-                // Remueve el ejercicio de la tabla
                 exerciseData.remove(selectedExercise);
             }
         } else {
@@ -154,9 +137,9 @@ public class ExerciseController {
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             exercise.setName(result.get());
-            exercise.setDescription("Sample description");  // Ajustar la descripción según sea necesario
-            exercise.setDuration(10);  // Duración por defecto, ajustable
-            exercise.setType("Strength");  // Tipo por defecto
+            exercise.setDescription("Sample description");  // Ajustar descripción en un formulario más completo
+            exercise.setDuration(10);  // Duración por defecto
+            exercise.setType("Strength");  // Tipo por defecto, ajustable en el formulario
             return exercise;
         }
         return null;

@@ -1,6 +1,7 @@
 package com.manageexerciseroutine.repository;
 
 import com.manageexerciseroutine.configuration.DatabaseConnection;
+import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Routine;
 import com.manageexerciseroutine.model.Trainer;
 
@@ -11,7 +12,7 @@ import java.util.List;
 public class RoutineRepositoryImpl implements RoutineRepository {
 
     @Override
-    public List<Routine> findAll() throws SQLException {
+    public List<Routine> findAll() throws DatabaseOperationException {
         String query = "SELECT r.id, r.name, r.description, r.duration, r.difficultyLevel, r.trainingType, " +
                 "t.id as id, t.name as trainerName, t.email as trainerEmail, t.specialty, t.biography " +
                 "FROM Routines r " +
@@ -44,12 +45,14 @@ public class RoutineRepositoryImpl implements RoutineRepository {
 
                 routines.add(routine);
             }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
         return routines;
     }
 
     @Override
-    public void save(Routine routine) throws SQLException {
+    public void save(Routine routine) throws DatabaseOperationException {
         String query = "INSERT INTO Routines (name, description, duration, difficultyLevel, trainingType, trainer_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -62,11 +65,13 @@ public class RoutineRepositoryImpl implements RoutineRepository {
             statement.setString(5, routine.getTrainingType());
             statement.setInt(6, routine.getTrainer().getId());  // Ahora es id
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
     }
 
     @Override
-    public void update(Routine routine) throws SQLException {
+    public void update(Routine routine) throws DatabaseOperationException {
         String query = "UPDATE Routines SET name = ?, description = ?, duration = ?, difficultyLevel = ?, trainingType = ?, trainer_id = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -79,22 +84,26 @@ public class RoutineRepositoryImpl implements RoutineRepository {
             statement.setInt(6, routine.getTrainer().getId());  // Ahora es id
             statement.setInt(7, routine.getId());
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
     }
 
     @Override
-    public void delete(Routine routine) throws SQLException {
+    public void delete(Routine routine) throws DatabaseOperationException {
         String query = "DELETE FROM Routines WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, routine.getId());
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
     }
 
     @Override
-    public Routine findById(int id) throws SQLException {
+    public Routine findById(int id) throws DatabaseOperationException {
         String query = "SELECT r.id, r.name, r.description, r.duration, r.difficultyLevel, r.trainingType, " +
                 "t.id as id, t.name as trainerName, t.email as trainerEmail, t.specialty, t.biography " +
                 "FROM Routines r " +
@@ -128,12 +137,14 @@ public class RoutineRepositoryImpl implements RoutineRepository {
                     );
                 }
             }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
         return null;  // Retorna null si no se encuentra la rutina con el id proporcionado
     }
 
     @Override
-    public List<Routine> findByTrainerId(int trainerId) throws SQLException {
+    public List<Routine> findByTrainerId(int trainerId) throws DatabaseOperationException {
         String query = "SELECT id, name, description, duration FROM Routines WHERE trainer_id = ?";
 
 
@@ -154,6 +165,8 @@ public class RoutineRepositoryImpl implements RoutineRepository {
                 }
                 return routines;
             }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
     }
 }

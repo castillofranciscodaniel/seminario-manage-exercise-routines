@@ -18,4 +18,8 @@ public class User {
         this.name = trainerName;
         this.email = trainerEmail;
     }
+
+    public User(int trainerId) {
+        this.id = trainerId;
+    }
 }

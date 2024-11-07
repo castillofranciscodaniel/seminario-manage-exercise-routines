@@ -1,5 +1,6 @@
 package com.manageexerciseroutine.controller;
 
+import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Subscription;
 import com.manageexerciseroutine.repository.ConfiguredExerciseRepository;
 import com.manageexerciseroutine.repository.ConfiguredExerciseRepositoryImpl;
@@ -10,13 +11,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +42,7 @@ public class SubscriptionsController {
     }
 
     @FXML
-    public void initialize() throws SQLException {
+    public void initialize() throws DatabaseOperationException {
         // Inicializar columnas
         routineNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getName()));
         durationColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getRoutine().getDuration()).asObject());
@@ -77,7 +77,7 @@ public class SubscriptionsController {
 
         Parent root = loader.load();
         Stage stage = new Stage();
-        stage.setTitle("Configured Exercises");
+        stage.setTitle("Ejercicios configurados");
         stage.setScene(new javafx.scene.Scene(root, 600, 400));
         stage.show();
     }

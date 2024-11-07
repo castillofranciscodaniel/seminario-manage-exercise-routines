@@ -1,15 +1,20 @@
 package com.manageexerciseroutine.repository;
 
+import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Exercise;
 
 import java.util.List;
 
 public interface ExerciseRepository {
-    void save(Exercise exercise);
+    // Método para encontrar todos los ejercicios por trainerId
+    List<Exercise> findAllByTrainerId(int trainerId) throws DatabaseOperationException;
 
-    List<Exercise> getAll();
+    // Guardar nuevo ejercicio
+    void save(Exercise exercise) throws DatabaseOperationException;
 
-    void delete(String name);
+    // Actualizar ejercicio existente
+    void update(Exercise exercise) throws DatabaseOperationException;
 
-    Exercise findByName(String name);
+    // Eliminar ejercicio
+    void delete(Exercise exercise) throws DatabaseOperationException;
 }

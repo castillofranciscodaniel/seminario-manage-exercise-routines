@@ -1,18 +1,14 @@
 package com.manageexerciseroutine.controller;
 
-import com.manageexerciseroutine.configuration.DatabaseConnection;
-import com.manageexerciseroutine.model.Trainer;
+import com.manageexerciseroutine.exeptions.DatabaseOperationException;
+import com.manageexerciseroutine.exeptions.UnauthorizedAccessException;
 import com.manageexerciseroutine.model.Subscriber;
-import com.manageexerciseroutine.model.Routine;
-import com.manageexerciseroutine.model.Subscription;
-import com.manageexerciseroutine.repository.RoutineRepository;
-import com.manageexerciseroutine.repository.RoutineRepositoryImpl;
+import com.manageexerciseroutine.model.Trainer;
 import com.manageexerciseroutine.repository.SubscriptionRepository;
 import com.manageexerciseroutine.repository.SubscriptionRepositoryImpl;
-import com.manageexerciseroutine.service.RoutineService;
+import com.manageexerciseroutine.service.SubscriberService;
 import com.manageexerciseroutine.service.SubscriptionService;
 import com.manageexerciseroutine.service.TrainerService;
-import com.manageexerciseroutine.service.SubscriberService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,9 +17,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
-import java.sql.SQLException;
-import java.util.List;
 
 public class LoginController {
 
@@ -55,7 +48,7 @@ public class LoginController {
             // Intentar iniciar sesión como entrenador
             Trainer trainer = trainerService.loginTrainer(email, password);
             if (trainer != null) {
-                redirectToRoutines(trainer.getId());
+                redirectToTrainerMenu(trainer.getId());
                 return;
             }
 
@@ -68,8 +61,9 @@ public class LoginController {
 
             // Si no se encuentra el usuario
             showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid email or password");
+            throw new UnauthorizedAccessException("Invalid email or password");
 
-        } catch (SQLException e) {
+        } catch (DatabaseOperationException e) {
             showAlert(Alert.AlertType.ERROR, "Database Error", "Error accessing the database.");
             e.printStackTrace();
         } catch (Exception e) {
@@ -77,24 +71,17 @@ public class LoginController {
         }
     }
 
-    private void redirectToRoutines(int trainerId) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/routines_view.fxml"));
+    private void redirectToTrainerMenu(int trainerId) throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/trainer_menu_view.fxml"));
 
-        // Crear el repositorio y el servicio
-        RoutineRepository routineRepository = new RoutineRepositoryImpl();
-        RoutineService routineService = new RoutineService(routineRepository);
+        // Crear el controlador manualmente con el trainerId
+        TrainerMenuController controller = new TrainerMenuController(trainerId);
+        loader.setController(controller);
 
-        // Crear el controlador manualmente con el trainerId y el RoutineService
-        RoutineController controller = new RoutineController(routineService, trainerId);
-        loader.setController(controller);  // Asignar el controlador manualmente
-
-        // Cargar la vista
         Parent root = loader.load();
-
-        // Mostrar la ventana
         Stage stage = new Stage();
-        stage.setTitle("My Routines");
-        stage.setScene(new Scene(root, 600, 400));
+        stage.setTitle("Menú del entrenador");
+        stage.setScene(new Scene(root, 400, 200));
         stage.show();
     }
 
@@ -115,7 +102,7 @@ public class LoginController {
 
         // Mostrar la ventana
         Stage stage = new Stage();
-        stage.setTitle("My Subscriptions");
+        stage.setTitle("Mis suscripciones");
         stage.setScene(new Scene(root, 600, 400));
         stage.show();
     }

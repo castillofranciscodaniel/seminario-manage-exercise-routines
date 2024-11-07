@@ -2,6 +2,7 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/src/main/java/com/manageexerciseroutine/repository/ConfiguredExerciseRepositoryImpl.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/manageexerciseroutine/repository/ExerciseRepositoryImpl.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/manageexerciseroutine/repository/SubscriptionRepositoryImpl.java" dialect="GenericSQL" />
   </component>
 </project>

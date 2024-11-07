@@ -1,5 +1,6 @@
 package com.manageexerciseroutine.controller;
 
+import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.ConfiguredExercise;
 import com.manageexerciseroutine.model.Subscription;
 import com.manageexerciseroutine.service.ConfiguredExerciseService;
@@ -11,7 +12,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class ConfiguredExercisesController {
@@ -42,7 +42,7 @@ public class ConfiguredExercisesController {
     }
 
     @FXML
-    public void initialize() throws SQLException {
+    public void initialize() throws DatabaseOperationException {
         // Inicializar las columnas de la tabla
         exerciseNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getExercise().getName()));
         orderColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getOrderIndex()).asObject());

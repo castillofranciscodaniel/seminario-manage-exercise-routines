@@ -1,5 +1,6 @@
 package com.manageexerciseroutine.service;
 
+import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Routine;
 import com.manageexerciseroutine.repository.RoutineRepository;
 import com.manageexerciseroutine.repository.RoutineRepositoryImpl;
@@ -15,23 +16,23 @@ public class RoutineService {
         this.routineRepository = routineRepository;
     }
 
-    public List<Routine> findAllRoutines() throws SQLException {
+    public List<Routine> findAllRoutines() throws DatabaseOperationException {
         return routineRepository.findAll();
     }
 
-    public void saveRoutine(Routine routine) throws SQLException {
+    public void saveRoutine(Routine routine) throws DatabaseOperationException {
         routineRepository.save(routine);
     }
 
-    public void updateRoutine(Routine routine) throws SQLException {
+    public void updateRoutine(Routine routine) throws DatabaseOperationException {
         routineRepository.update(routine);
     }
 
-    public void deleteRoutine(Routine routine) throws SQLException {
+    public void deleteRoutine(Routine routine) throws DatabaseOperationException {
         routineRepository.delete(routine);
     }
 
-    public List<Routine> findRoutinesByTrainerId(int trainerId) throws SQLException {
+    public List<Routine> findRoutinesByTrainerId(int trainerId) throws DatabaseOperationException {
         return routineRepository.findByTrainerId(trainerId);
     }
 }

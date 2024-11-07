@@ -25,4 +25,8 @@ public class Trainer extends User {
         this.specialty = specialty;
         this.biography = biography;
     }
+
+    public Trainer(int trainerId) {
+        super(trainerId);
+    }
 }

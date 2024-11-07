@@ -1,7 +1,9 @@
 package com.manageexerciseroutine.repository;
 
 import com.manageexerciseroutine.configuration.DatabaseConnection;
+import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Trainer;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.List;
 public class TrainerRepositoryImpl implements TrainerRepository {
 
     @Override
-    public void save(Trainer trainer) throws SQLException {
+    public void save(Trainer trainer) throws DatabaseOperationException {
         String query = "INSERT INTO Trainers (name, email, password, specialty, biography) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -20,11 +22,13 @@ public class TrainerRepositoryImpl implements TrainerRepository {
             statement.setString(4, trainer.getSpecialty());
             statement.setString(5, trainer.getBiography());
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
     }
 
     @Override
-    public List<Trainer> findAll() throws SQLException {
+    public List<Trainer> findAll() throws DatabaseOperationException {
         String query = "SELECT * FROM Trainers";
         List<Trainer> trainers = new ArrayList<>();
 
@@ -43,12 +47,14 @@ public class TrainerRepositoryImpl implements TrainerRepository {
                 );
                 trainers.add(trainer);
             }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
         return trainers;
     }
 
     @Override
-    public Trainer findById(int id) throws SQLException {
+    public Trainer findById(int id) throws DatabaseOperationException {
         String query = "SELECT * FROM Trainers WHERE id = ?";
         Trainer trainer = null;
 
@@ -67,12 +73,14 @@ public class TrainerRepositoryImpl implements TrainerRepository {
                     );
                 }
             }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
         return trainer;
     }
 
     @Override
-    public void update(Trainer trainer) throws SQLException {
+    public void update(Trainer trainer) throws DatabaseOperationException {
         String query = "UPDATE Trainers SET name = ?, email = ?, password = ?, specialty = ?, biography = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -84,22 +92,26 @@ public class TrainerRepositoryImpl implements TrainerRepository {
             statement.setString(5, trainer.getBiography());
             statement.setInt(6, trainer.getId());
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
     }
 
     @Override
-    public void delete(int id) throws SQLException {
+    public void delete(int id) throws DatabaseOperationException {
         String query = "DELETE FROM Trainers WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
     }
 
     @Override
-    public List<Trainer> findBySpecialty(String specialty) throws SQLException {
+    public List<Trainer> findBySpecialty(String specialty) throws DatabaseOperationException {
         String query = "SELECT * FROM Trainers WHERE specialty = ?";
         List<Trainer> trainers = new ArrayList<>();
 
@@ -119,12 +131,14 @@ public class TrainerRepositoryImpl implements TrainerRepository {
                     trainers.add(trainer);
                 }
             }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
         return trainers;
     }
 
     @Override
-    public Trainer findByEmailAndPassword(String email, String password) throws SQLException {
+    public Trainer findByEmailAndPassword(String email, String password) throws DatabaseOperationException {
         String query = "SELECT * FROM Trainers WHERE email = ? AND password = ?";
         Trainer trainer = null;
 
@@ -144,6 +158,8 @@ public class TrainerRepositoryImpl implements TrainerRepository {
                     );
                 }
             }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
         return trainer;
     }

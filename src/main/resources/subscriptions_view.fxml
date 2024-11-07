@@ -7,8 +7,8 @@
 
     <TableView fx:id="subscriptionTable">
         <columns>
-            <TableColumn fx:id="routineNameColumn" text="Routine Name" />
-            <TableColumn fx:id="durationColumn" text="Duration" />
+            <TableColumn fx:id="routineNameColumn" text="Nombre de Rutina" />
+            <TableColumn fx:id="durationColumn" text="Duración" />
         </columns>
     </TableView>
 

@@ -13,4 +13,5 @@ public class Exercise {
     private String description;
     private int duration;
     private String type;
+    private Trainer trainer;
 }

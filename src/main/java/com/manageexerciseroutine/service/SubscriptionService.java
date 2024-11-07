@@ -1,5 +1,6 @@
 package com.manageexerciseroutine.service;
 
+import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Subscription;
 import com.manageexerciseroutine.repository.SubscriptionRepository;
 
@@ -15,17 +16,17 @@ public class SubscriptionService {
     }
 
     // Método para encontrar suscripciones por ID de usuario
-    public List<Subscription> findSubscriptionsByUserId(int userId) throws SQLException {
+    public List<Subscription> findSubscriptionsByUserId(int userId) throws DatabaseOperationException {
         return subscriptionRepository.findBySubscriberId(userId);
     }
 
     // Método para guardar una nueva suscripción
-    public void saveSubscription(Subscription subscription) throws SQLException {
+    public void saveSubscription(Subscription subscription) throws DatabaseOperationException {
         subscriptionRepository.save(subscription);
     }
 
     // Método para eliminar una suscripción
-    public void deleteSubscription(Subscription subscription) throws SQLException {
+    public void deleteSubscription(Subscription subscription) throws DatabaseOperationException {
         subscriptionRepository.delete(subscription);
     }
 }

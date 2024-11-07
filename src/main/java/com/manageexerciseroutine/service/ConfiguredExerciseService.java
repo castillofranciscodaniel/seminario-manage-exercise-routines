@@ -1,5 +1,6 @@
 package com.manageexerciseroutine.service;
 
+import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.ConfiguredExercise;
 import com.manageexerciseroutine.repository.ConfiguredExerciseRepository;
 
@@ -14,7 +15,7 @@ public class ConfiguredExerciseService {
         this.configuredExerciseRepository = configuredExerciseRepository;
     }
 
-    public List<ConfiguredExercise> findExercisesByRoutineId(int routineId) throws SQLException {
-        return configuredExerciseRepository.findByRoutineId(routineId);
+    public List<ConfiguredExercise> findExercisesByRoutineId(int routineId) throws DatabaseOperationException {
+        return configuredExerciseRepository.findAllByRoutineId(routineId);
     }
 }

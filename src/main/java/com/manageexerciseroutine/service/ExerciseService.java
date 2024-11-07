@@ -1,31 +1,37 @@
 package com.manageexerciseroutine.service;
 
+import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Exercise;
 import com.manageexerciseroutine.repository.ExerciseRepository;
+import com.manageexerciseroutine.repository.ExerciseRepositoryImpl;
 
 import java.util.List;
 
 public class ExerciseService {
+
     private final ExerciseRepository exerciseRepository;
 
-    public ExerciseService(ExerciseRepository exerciseRepository) {
-        this.exerciseRepository = exerciseRepository;
+    public ExerciseService() {
+        this.exerciseRepository = new ExerciseRepositoryImpl();  // Instancia del repositorio
     }
 
-    public void addExercise(String name, String description, int duration, String type) {
-        Exercise exercise = new Exercise(0, name, description, duration, type); // ID can be generated dynamically
+    // Recuperar todos los ejercicios por trainerId
+    public List<Exercise> findAllExercisesByTrainerId(int trainerId) throws DatabaseOperationException {
+        return exerciseRepository.findAllByTrainerId(trainerId);
+    }
+
+    // Guardar un nuevo ejercicio
+    public void saveExercise(Exercise exercise) throws DatabaseOperationException {
         exerciseRepository.save(exercise);
     }
 
-    public List<Exercise> getExercises() {
-        return exerciseRepository.getAll();
+    // Actualizar un ejercicio existente
+    public void updateExercise(Exercise exercise) throws DatabaseOperationException {
+        exerciseRepository.update(exercise);
     }
 
-    public void deleteExercise(String name) {
-        exerciseRepository.delete(name);
-    }
-
-    public Exercise findExercise(String name) {
-        return exerciseRepository.findByName(name);
+    // Eliminar un ejercicio
+    public void deleteExercise(Exercise exercise) throws DatabaseOperationException {
+        exerciseRepository.delete(exercise);
     }
 }

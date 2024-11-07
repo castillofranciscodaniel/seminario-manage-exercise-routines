@@ -9,13 +9,13 @@
 
     <TableView fx:id="routineTable">
         <columns>
-            <TableColumn fx:id="nameColumn" text="Routine Name"/>
-            <TableColumn fx:id="descriptionColumn" text="Description"/>
-            <TableColumn fx:id="durationColumn" text="Duration (min)"/>
+            <TableColumn fx:id="nameColumn" text="Nombre"/>
+            <TableColumn fx:id="descriptionColumn" text="Descripción"/>
+            <TableColumn fx:id="durationColumn" text="Duración (min)"/>
         </columns>
     </TableView>
 
-    <Button text="Create New Routine" onAction="#handleCreateRoutine" />
-    <Button text="Edit Routine" onAction="#handleEditRoutine" />
-    <Button text="Delete Routine" onAction="#handleDeleteRoutine" />
+    <Button text="Crear Rutina" onAction="#handleCreateRoutine" />
+    <Button text="Editar Rutina" onAction="#handleEditRoutine" />
+    <Button text="Eliminar Rutina" onAction="#handleDeleteRoutine" />
 </VBox>

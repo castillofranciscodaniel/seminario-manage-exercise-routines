@@ -1,7 +1,9 @@
 package com.manageexerciseroutine.repository;
 
 import com.manageexerciseroutine.configuration.DatabaseConnection;
+import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Subscriber;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.List;
 public class SubscriberRepositoryImpl implements SubscriberRepository {
 
     @Override
-    public void save(Subscriber subscriber) throws SQLException {
+    public void save(Subscriber subscriber) throws DatabaseOperationException {
         String query = "INSERT INTO Subscribers (name, email, password, registrationDate) VALUES (?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -19,11 +21,13 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
             statement.setString(3, subscriber.getPassword());
             statement.setDate(4, new Date(subscriber.getRegistrationDate().getTime()));
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
     }
 
     @Override
-    public List<Subscriber> findAll() throws SQLException {
+    public List<Subscriber> findAll() throws DatabaseOperationException {
         String query = "SELECT * FROM Subscribers";
         List<Subscriber> subscribers = new ArrayList<>();
 
@@ -33,20 +37,22 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
 
             while (resultSet.next()) {
                 Subscriber subscriber = new Subscriber(
-                    resultSet.getInt("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("email"),
-                    resultSet.getString("password"),
-                    resultSet.getDate("registrationDate")
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getDate("registrationDate")
                 );
                 subscribers.add(subscriber);
             }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
         return subscribers;
     }
 
     @Override
-    public Subscriber findById(int id) throws SQLException {
+    public Subscriber findById(int id) throws DatabaseOperationException {
         String query = "SELECT * FROM Subscribers WHERE id = ?";
         Subscriber subscriber = null;
 
@@ -56,20 +62,22 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     subscriber = new Subscriber(
-                        resultSet.getInt("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("email"),
-                        resultSet.getString("password"),
-                        resultSet.getDate("registrationDate")
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("password"),
+                            resultSet.getDate("registrationDate")
                     );
                 }
             }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
         return subscriber;
     }
 
     @Override
-    public void update(Subscriber subscriber) throws SQLException {
+    public void update(Subscriber subscriber) throws DatabaseOperationException {
         String query = "UPDATE Subscribers SET name = ?, email = ?, password = ?, registrationDate = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -80,22 +88,26 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
             statement.setDate(4, new Date(subscriber.getRegistrationDate().getTime()));
             statement.setInt(5, subscriber.getId());
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
     }
 
     @Override
-    public void delete(int id) throws SQLException {
+    public void delete(int id) throws DatabaseOperationException {
         String query = "DELETE FROM Subscribers WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
     }
 
     @Override
-    public List<Subscriber> findByRegistrationDate(String date) throws SQLException {
+    public List<Subscriber> findByRegistrationDate(String date) throws DatabaseOperationException {
         String query = "SELECT * FROM Subscribers WHERE registrationDate = ?";
         List<Subscriber> subscribers = new ArrayList<>();
 
@@ -105,21 +117,23 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     Subscriber subscriber = new Subscriber(
-                        resultSet.getInt("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("email"),
-                        resultSet.getString("password"),
-                        resultSet.getDate("registrationDate")
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("password"),
+                            resultSet.getDate("registrationDate")
                     );
                     subscribers.add(subscriber);
                 }
             }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
         return subscribers;
     }
 
     @Override
-    public Subscriber findByEmailAndPassword(String email, String password) throws SQLException {
+    public Subscriber findByEmailAndPassword(String email, String password) throws DatabaseOperationException {
         String query = "SELECT * FROM Subscribers WHERE email = ? AND password = ?";
         Subscriber subscriber = null;
 
@@ -138,6 +152,8 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
                     );
                 }
             }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
         return subscriber;
     }

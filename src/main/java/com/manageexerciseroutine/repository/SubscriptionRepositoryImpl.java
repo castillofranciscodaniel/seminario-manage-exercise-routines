@@ -1,6 +1,7 @@
 package com.manageexerciseroutine.repository;
 
 import com.manageexerciseroutine.configuration.DatabaseConnection;
+import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Routine;
 import com.manageexerciseroutine.model.Subscriber;
 import com.manageexerciseroutine.model.Subscription;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
-    public List<Subscription> findBySubscriberId(int subscriberId) throws SQLException {
+    public List<Subscription> findBySubscriberId(int subscriberId) throws DatabaseOperationException {
         String query = "SELECT s.id, s.startDate, s.endDate, s.status, " +
                 "sub.id as id, sub.name as subscriberName, sub.email as subscriberEmail, sub.registrationDate, " +
                 "r.id as id, r.name, r.description, r.duration, r.difficultyLevel, r.trainingType, " +
@@ -70,12 +71,14 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
                     subscriptions.add(subscription);
                 }
             }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
         return subscriptions;
     }
 
     @Override
-    public void save(Subscription subscription) throws SQLException {
+    public void save(Subscription subscription) throws DatabaseOperationException {
         String query = "INSERT INTO Subscriptions (startDate, endDate, status, subscriber_id, routine_id) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -86,11 +89,13 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
             statement.setInt(4, subscription.getSubscriber().getId());  // Ahora es id
             statement.setInt(5, subscription.getRoutine().getId());  // Ahora es id
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
     }
 
     @Override
-    public void update(Subscription subscription) throws SQLException {
+    public void update(Subscription subscription) throws DatabaseOperationException {
         String query = "UPDATE Subscriptions SET startDate = ?, endDate = ?, status = ?, subscriber_id = ?, routine_id = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -102,17 +107,21 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
             statement.setInt(5, subscription.getRoutine().getId());  // Ahora es id
             statement.setInt(6, subscription.getId());  // Ahora es id
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
     }
 
     @Override
-    public void delete(Subscription subscription) throws SQLException {
+    public void delete(Subscription subscription) throws DatabaseOperationException {
         String query = "DELETE FROM Subscriptions WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, subscription.getId());  // Ahora es id
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error executing query", e);
         }
     }
 }
