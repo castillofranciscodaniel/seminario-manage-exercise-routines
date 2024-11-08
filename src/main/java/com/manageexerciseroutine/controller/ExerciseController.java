@@ -4,9 +4,6 @@ import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Exercise;
 import com.manageexerciseroutine.model.Trainer;
 import com.manageexerciseroutine.service.ExerciseService;
-import com.manageexerciseroutine.service.TrainerService;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,7 +12,6 @@ import javafx.stage.Stage;
 import lombok.Data;
 import lombok.Getter;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -55,7 +51,11 @@ public class ExerciseController {
     @FXML
     private TableColumn<Exercise, String> trainerColumn; // Columna para mostrar el nombre del Trainer
 
+    @Getter
+    private Exercise createdExercise; // Variable para almacenar el ejercicio creado
+
     private final ObservableList<Exercise> exerciseData = FXCollections.observableArrayList();
+
     private final ExerciseService exerciseService;
 
     private Trainer trainer;
@@ -77,30 +77,26 @@ public class ExerciseController {
     @FXML
     public void handleSaveExercise() {
         try {
-            // Capturar datos de los campos
             String name = nameField.getText();
             String description = descriptionField.getText();
             int duration = Integer.parseInt(durationField.getText());
-            String type = typeComboBox.getValue(); // Obtener el valor seleccionado en el ComboBox
+            String type = typeComboBox.getValue();
 
-            // Verificar si se seleccionó un tipo de ejercicio
             if (type == null) {
                 showAlert(Alert.AlertType.ERROR, "Error", "Por favor selecciona un tipo de ejercicio.");
                 return;
             }
 
-            // Crear y guardar el ejercicio
-            Exercise exercise = new Exercise();
-            exercise.setName(name);
-            exercise.setDescription(description);
-            exercise.setDuration(duration);
-            exercise.setType(type);
-            exercise.setTrainer(trainer);
+            createdExercise = new Exercise();  // Crear el objeto de ejercicio
+            createdExercise.setName(name);
+            createdExercise.setDescription(description);
+            createdExercise.setDuration(duration);
+            createdExercise.setType(type);
+            createdExercise.setTrainer(trainer);
 
-            exerciseService.saveExercise(exercise);
+            exerciseService.saveExercise(createdExercise); // Guardar en la base de datos
             showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Ejercicio creado exitosamente!");
 
-            // Cerrar el diálogo
             Stage stage = (Stage) nameField.getScene().getWindow();
             stage.close();
         } catch (NumberFormatException e) {

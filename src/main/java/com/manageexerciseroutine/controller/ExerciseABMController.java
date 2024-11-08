@@ -72,25 +72,28 @@ public class ExerciseABMController {
         exerciseTable.setItems(exerciseData);
     }
 
-    // Crear un nuevo ejercicio
     @FXML
     public void handleCreateExercise() throws DatabaseOperationException {
         try {
             URL url = getClass().getResource("/create_exercise_view.fxml");
-            System.out.println("Fran. url: " + url);
             FXMLLoader loader = new FXMLLoader(url);
 
-            // Obtener el controlador de la vista de creación de ejercicio
+            // Configurar el controlador y cargar la vista
             ExerciseController controller = new ExerciseController(trainer);
-
             loader.setController(controller);
 
             Parent root = loader.load();
-            // Configurar la escena y mostrar la nueva ventana
             Stage stage = new Stage();
             stage.setTitle("Crear Ejercicio");
             stage.setScene(new Scene(root));
             stage.showAndWait();
+
+            // Después de cerrar la ventana de creación, actualizamos la tabla
+            Exercise newExercise = controller.getCreatedExercise();
+            if (newExercise != null) {
+                exerciseData.add(newExercise); // Añadir el nuevo ejercicio a la lista de la tabla
+                exerciseTable.refresh(); // Refrescar la tabla para mostrar el nuevo ejercicio
+            }
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de creación de ejercicio.");
