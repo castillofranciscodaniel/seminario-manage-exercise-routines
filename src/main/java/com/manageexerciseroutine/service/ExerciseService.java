@@ -20,10 +20,16 @@ public class ExerciseService {
         return exerciseRepository.findAllByTrainerId(trainerId);
     }
 
-    // Guardar un nuevo ejercicio
     public void saveExercise(Exercise exercise) throws DatabaseOperationException {
-        exerciseRepository.save(exercise);
+        if (exercise.getId() == 0) {
+            // Si el ID es 0, creamos un nuevo ejercicio
+            exerciseRepository.save(exercise);
+        } else {
+            // Si el ID es distinto de 0, actualizamos el ejercicio existente
+            exerciseRepository.update(exercise);
+        }
     }
+
 
     // Actualizar un ejercicio existente
     public void updateExercise(Exercise exercise) throws DatabaseOperationException {

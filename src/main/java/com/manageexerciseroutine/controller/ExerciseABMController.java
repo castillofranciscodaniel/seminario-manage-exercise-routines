@@ -75,10 +75,7 @@ public class ExerciseABMController {
     @FXML
     public void handleCreateExercise() throws DatabaseOperationException {
         try {
-            URL url = getClass().getResource("/create_exercise_view.fxml");
-            FXMLLoader loader = new FXMLLoader(url);
-
-            // Configurar el controlador y cargar la vista
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/create_exercise_view.fxml"));
             ExerciseController controller = new ExerciseController(trainer);
             loader.setController(controller);
 
@@ -88,11 +85,10 @@ public class ExerciseABMController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            // Después de cerrar la ventana de creación, actualizamos la tabla
-            Exercise newExercise = controller.getCreatedExercise();
-            if (newExercise != null) {
-                exerciseData.add(newExercise); // Añadir el nuevo ejercicio a la lista de la tabla
-                exerciseTable.refresh(); // Refrescar la tabla para mostrar el nuevo ejercicio
+            // Si el ejercicio fue creado, añadirlo a la lista
+            if (controller.isUpdated()) {
+                exerciseData.add(controller.getExercise());
+                exerciseTable.refresh();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -100,33 +96,59 @@ public class ExerciseABMController {
         }
     }
 
-    // Editar ejercicio existente
+
     @FXML
     public void handleEditExercise() throws DatabaseOperationException {
         Exercise selectedExercise = exerciseTable.getSelectionModel().getSelectedItem();
         if (selectedExercise != null) {
-            Exercise updatedExercise = showExerciseDialog(selectedExercise);
-            if (updatedExercise != null) {
-                exerciseService.updateExercise(updatedExercise);
-                exerciseTable.refresh();
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/edit_exercise_view.fxml"));
+
+                // Configurar el controlador con el ejercicio a editar
+                ExerciseController controller = new ExerciseController(trainer);
+                loader.setController(controller);
+
+                Parent root = loader.load();
+                controller.setExerciseToEdit(selectedExercise);  // Pasar el ejercicio a editar
+
+                // Mostrar la ventana de edición
+                Stage stage = new Stage();
+                stage.setTitle("Editar Ejercicio");
+                stage.setScene(new Scene(root));
+                stage.showAndWait();
+
+                // Verificar si el ejercicio ha sido actualizado
+                if (controller.isUpdated()) {
+                    exerciseTable.refresh(); // Refrescar la tabla con el ejercicio actualizado
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de edición de ejercicio.");
             }
         } else {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select an exercise to edit.");
+            showAlert(Alert.AlertType.WARNING, "Selección vacía", "Por favor selecciona un ejercicio para editar.");
         }
     }
 
-    // Eliminar ejercicio seleccionado
+
+
     @FXML
-    public void handleDeleteExercise() throws DatabaseOperationException {
+    public void handleDeleteExercise() {
         Exercise selectedExercise = exerciseTable.getSelectionModel().getSelectedItem();
         if (selectedExercise != null) {
-            Optional<ButtonType> result = showAlert(Alert.AlertType.CONFIRMATION, "Confirm Delete", "Are you sure you want to delete this exercise?");
+            Optional<ButtonType> result = showAlert(Alert.AlertType.CONFIRMATION, "Confirmación", "¿Estás seguro de que deseas eliminar este ejercicio?");
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                exerciseService.deleteExercise(selectedExercise);
-                exerciseData.remove(selectedExercise);
+                try {
+                    exerciseService.deleteExercise(selectedExercise); // Eliminar de la base de datos
+                    exerciseData.remove(selectedExercise); // Remover del ObservableList
+                    exerciseTable.refresh(); // Refrescar la tabla
+                    showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Ejercicio eliminado!");
+                } catch (DatabaseOperationException e) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "No se pudo eliminar el ejercicio.");
+                }
             }
         } else {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select an exercise to delete.");
+            showAlert(Alert.AlertType.WARNING, "Selección vacía", "Por favor selecciona un ejercicio para eliminar.");
         }
     }
 

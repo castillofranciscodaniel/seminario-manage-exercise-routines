@@ -54,17 +54,40 @@ public class ExerciseController {
     @Getter
     private Exercise createdExercise; // Variable para almacenar el ejercicio creado
 
+    private Exercise exerciseToEdit; // Ejercicio a editar, si es aplicable
+
+
     private final ObservableList<Exercise> exerciseData = FXCollections.observableArrayList();
 
     private final ExerciseService exerciseService;
 
     private Trainer trainer;
 
+    @Getter
+    private boolean updated = false;
+
+    public Exercise getExercise() {
+        return exerciseToEdit;
+    }
+
     // Constructor con inyección de servicios y trainerId
     public ExerciseController(Trainer trainer) {
         this.exerciseService = new ExerciseService();
         this.trainer = trainer;
     }
+
+    public void setExerciseToEdit(Exercise exercise) {
+        if (nameField != null && descriptionField != null && durationField != null && typeComboBox != null) {
+            this.exerciseToEdit = exercise;
+            nameField.setText(exercise.getName());
+            descriptionField.setText(exercise.getDescription());
+            durationField.setText(String.valueOf(exercise.getDuration()));
+            typeComboBox.setValue(exercise.getType());
+        } else {
+            System.out.println("Campos no inicializados aún");
+        }
+    }
+
 
     @FXML
     public void initialize() throws DatabaseOperationException {
@@ -77,6 +100,7 @@ public class ExerciseController {
     @FXML
     public void handleSaveExercise() {
         try {
+            // Capturar datos de la interfaz
             String name = nameField.getText();
             String description = descriptionField.getText();
             int duration = Integer.parseInt(durationField.getText());
@@ -87,15 +111,20 @@ public class ExerciseController {
                 return;
             }
 
-            createdExercise = new Exercise();  // Crear el objeto de ejercicio
-            createdExercise.setName(name);
-            createdExercise.setDescription(description);
-            createdExercise.setDuration(duration);
-            createdExercise.setType(type);
-            createdExercise.setTrainer(trainer);
+            if (exerciseToEdit == null) {
+                exerciseToEdit = new Exercise();
+            }
 
-            exerciseService.saveExercise(createdExercise); // Guardar en la base de datos
-            showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Ejercicio creado exitosamente!");
+            exerciseToEdit.setName(name);
+            exerciseToEdit.setDescription(description);
+            exerciseToEdit.setDuration(duration);
+            exerciseToEdit.setType(type);
+            exerciseToEdit.setTrainer(trainer);
+
+            exerciseService.saveExercise(exerciseToEdit);
+
+            updated = true;  // Marcar como actualizado
+            showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Ejercicio guardado exitosamente!");
 
             Stage stage = (Stage) nameField.getScene().getWindow();
             stage.close();
@@ -106,22 +135,39 @@ public class ExerciseController {
         }
     }
 
-    // Editar ejercicio existente
+
+    private void populateExerciseData(Exercise exercise) {
+        exercise.setName(nameField.getText());
+        exercise.setDescription(descriptionField.getText());
+        exercise.setDuration(Integer.parseInt(durationField.getText()));
+        exercise.setType(typeComboBox.getValue());
+        exercise.setTrainer(trainer);
+    }
+
+
     @FXML
-    public void handleEditExercise() throws DatabaseOperationException {
+    public void handleCreateExercise() {
+        Exercise newExercise = new Exercise();
+        populateExerciseData(newExercise);
+        exerciseService.saveExercise(newExercise);
+        exerciseData.add(newExercise);
+        exerciseTable.refresh();
+        showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Ejercicio creado exitosamente!");
+    }
+
+    @FXML
+    public void handleEditExercise() {
         Exercise selectedExercise = exerciseTable.getSelectionModel().getSelectedItem();
         if (selectedExercise != null) {
-            Exercise updatedExercise = showExerciseDialog(selectedExercise);
-            if (updatedExercise != null) {
-                // Actualiza el ejercicio en la base de datos
-                exerciseService.updateExercise(updatedExercise);
-                // Refresca la tabla de ejercicios
-                exerciseTable.refresh();
-            }
+            populateExerciseData(selectedExercise);
+            exerciseService.saveExercise(selectedExercise);
+            exerciseTable.refresh();
+            showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Ejercicio actualizado exitosamente!");
         } else {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select an exercise to edit.");
+            showAlert(Alert.AlertType.WARNING, "Selección vacía", "Por favor selecciona un ejercicio para editar.");
         }
     }
+
 
     // Eliminar ejercicio seleccionado
     @FXML
