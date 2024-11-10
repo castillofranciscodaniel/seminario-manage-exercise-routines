@@ -18,6 +18,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.net.URL;
+
 public class LoginController {
 
     @FXML
@@ -114,5 +117,28 @@ public class LoginController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    // Método para abrir la ventana de registro
+    @FXML
+    public void openRegisterView() {
+        try {
+            URL url = getClass().getResource("/register_view.fxml");
+            System.out.println("holi " + url);
+            FXMLLoader loader = new FXMLLoader(url);
+
+            RegisterController controller = new RegisterController(subscriberService, trainerService);
+            loader.setController(controller);
+            Parent root = loader.load();
+
+
+            Stage registerStage = new Stage();
+            registerStage.setTitle("Registro de Usuario");
+            registerStage.setScene(new Scene(root));
+            registerStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de registro.");
+        }
     }
 }

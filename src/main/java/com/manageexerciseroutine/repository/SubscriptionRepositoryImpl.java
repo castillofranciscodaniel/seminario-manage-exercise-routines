@@ -9,6 +9,7 @@ import com.manageexerciseroutine.model.Trainer;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class SubscriptionRepositoryImpl implements SubscriptionRepository {
@@ -32,12 +33,17 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     // Construir el objeto Subscriber
+
+                    var registration =  Calendar.getInstance();
+                    registration.setTime(resultSet.getDate("registrationDate"));
+
                     Subscriber subscriber = new Subscriber(
                             resultSet.getInt("id"),  // Ahora es id
                             resultSet.getString("subscriberName"),
                             resultSet.getString("subscriberEmail"),
-                            resultSet.getDate("registrationDate")
-                    );
+                            registration.getTime(),
+                            resultSet.getString("biography")
+                            );
 
                     // Construir el objeto Trainer
                     Trainer trainer = new Trainer(

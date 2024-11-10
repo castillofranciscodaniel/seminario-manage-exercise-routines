@@ -11,6 +11,10 @@ public class SubscriberService {
 
     private final SubscriberRepositoryImpl subscriberRepository;
 
+    public SubscriberService() {
+        this.subscriberRepository = new SubscriberRepositoryImpl();
+    }
+
     public SubscriberService(SubscriberRepositoryImpl subscriberRepository) {
         this.subscriberRepository = subscriberRepository;
     }

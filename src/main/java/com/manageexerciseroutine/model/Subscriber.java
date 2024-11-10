@@ -10,15 +10,25 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 public class Subscriber extends User {
-    private Date registrationDate;
 
-    public Subscriber(int id, String name, String email, String password, Date registrationDate) {
-        super(id, name, email, password);
-        this.registrationDate = registrationDate;
+    public Subscriber(String name, String email, String password, String biography) {
+        super(name, email, password, biography);
     }
 
-    public Subscriber(int subscriberId, String subscriberName, String subscriberEmail, java.sql.Date registrationDate) {
-        super(subscriberId, subscriberName, subscriberEmail);
-        this.registrationDate = new Date(registrationDate.getTime());
+    public Subscriber(int id, String name, String email, String password) {
+        super(id, name, email, password);
+    }
+
+    public Subscriber(int id) {
+        super(id);
+    }
+
+    public Subscriber(int id, String name, String email, String password, Date registrationDate, String biography) {
+        super(id, name, email, password, registrationDate, biography);
+    }
+
+    public Subscriber(int id, String name, String email, Date registrationDate, String biography) {
+        super(id, name, email, registrationDate, biography);
     }
 }
+

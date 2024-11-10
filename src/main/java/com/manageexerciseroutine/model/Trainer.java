@@ -11,19 +11,21 @@ import java.util.List;
 @NoArgsConstructor
 public class Trainer extends User {
     private String specialty;
-    private String biography;
     private List<Routine> Routine;
 
-    public Trainer(int id, String name, String email, String password, String specialty, String biography) {
-        super(id, name, email, password);
+    public Trainer(String name, String email, String password, String specialty, String biography) {
+        super(name, email, password, biography);
         this.specialty = specialty;
-        this.biography = biography;
+    }
+
+    public Trainer(int id, String name, String email, String password, String specialty, String biography) {
+        super(id, name, email, password, biography);
+        this.specialty = specialty;
     }
 
     public Trainer(int trainerId, String trainerName, String trainerEmail, String specialty, String biography) {
-        super(trainerId, trainerName, trainerEmail);
+        super(trainerId, trainerName, trainerEmail, biography);
         this.specialty = specialty;
-        this.biography = biography;
     }
 
     public Trainer(int trainerId) {

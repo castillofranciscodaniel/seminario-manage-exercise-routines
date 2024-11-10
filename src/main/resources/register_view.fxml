@@ -1,16 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.manageexerciseroutine.controller.UserController"
-      alignment="CENTER" spacing="10" padding="20">
-    <Label text="Register New User" />
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
 
-    <TextField fx:id="nameField" promptText="Name" />
-    <TextField fx:id="emailField" promptText="Email" />
-    <PasswordField fx:id="passwordField" promptText="Password" />
-    <TextArea fx:id="biographyField" promptText="Biography" />
+<?import javafx.scene.control.PasswordField?>
+<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+          alignment="CENTER" hgap="10" vgap="10">
 
-    <Button text="Register" onAction="#handleRegister" />
-</VBox>
+    <!-- Campos Comunes -->
+    <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+    <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+    <Label text="Email:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+    <TextField fx:id="emailField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+    <Label text="Contraseña:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+    <PasswordField fx:id="passwordField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+    <!-- Checkboxes para Selección de Tipo de Usuario -->
+    <Label text="Tipo de Usuario:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+    <CheckBox fx:id="subscriberCheckBox" text="Suscriptor" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+    <CheckBox fx:id="trainerCheckBox" text="Entrenador" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+
+    <!-- Campo de Biografía para ambos tipos -->
+    <Label text="Biografía:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+    <TextArea fx:id="biographyField" GridPane.rowIndex="4" GridPane.columnIndex="1" GridPane.columnSpan="2"/>
+
+    <!-- Campo Especialidad solo para Entrenador -->
+    <Label fx:id="specialtyField_label" text="Especialidad:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+    <TextField fx:id="specialtyField" GridPane.rowIndex="5" GridPane.columnIndex="1" GridPane.columnSpan="2"/>
+
+    <!-- Botón de Registro -->
+    <Button text="Registrarse" onAction="#handleRegister" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+</GridPane>

@@ -12,7 +12,7 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
 
     @Override
     public void save(Subscriber subscriber) throws DatabaseOperationException {
-        String query = "INSERT INTO Subscribers (name, email, password, registrationDate) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO Subscribers (name, email, password, registrationDate, biography) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -20,6 +20,7 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
             statement.setString(2, subscriber.getEmail());
             statement.setString(3, subscriber.getPassword());
             statement.setDate(4, new Date(subscriber.getRegistrationDate().getTime()));
+            statement.setString(5, subscriber.getBiography());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseOperationException("Error executing query", e);
@@ -41,7 +42,8 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
                         resultSet.getString("name"),
                         resultSet.getString("email"),
                         resultSet.getString("password"),
-                        resultSet.getDate("registrationDate")
+                        resultSet.getDate("registrationDate"),
+                        resultSet.getString("biography")
                 );
                 subscribers.add(subscriber);
             }
@@ -66,7 +68,8 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
                             resultSet.getString("name"),
                             resultSet.getString("email"),
                             resultSet.getString("password"),
-                            resultSet.getDate("registrationDate")
+                            resultSet.getDate("registrationDate"),
+                            resultSet.getString("biography")
                     );
                 }
             }
@@ -78,7 +81,8 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
 
     @Override
     public void update(Subscriber subscriber) throws DatabaseOperationException {
-        String query = "UPDATE Subscribers SET name = ?, email = ?, password = ?, registrationDate = ? WHERE id = ?";
+        String query = "UPDATE Subscribers SET name = ?, email = ?, password = ?, registrationDate = ?" +
+                " biography = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -86,7 +90,8 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
             statement.setString(2, subscriber.getEmail());
             statement.setString(3, subscriber.getPassword());
             statement.setDate(4, new Date(subscriber.getRegistrationDate().getTime()));
-            statement.setInt(5, subscriber.getId());
+            statement.setString(5, subscriber.getBiography());
+            statement.setInt(6, subscriber.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseOperationException("Error executing query", e);
@@ -121,7 +126,8 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
                             resultSet.getString("name"),
                             resultSet.getString("email"),
                             resultSet.getString("password"),
-                            resultSet.getDate("registrationDate")
+                            resultSet.getDate("registrationDate"),
+                            resultSet.getString("biography")
                     );
                     subscribers.add(subscriber);
                 }
@@ -148,7 +154,8 @@ public class SubscriberRepositoryImpl implements SubscriberRepository {
                             resultSet.getString("name"),
                             resultSet.getString("email"),
                             resultSet.getString("password"),
-                            resultSet.getDate("registrationDate")
+                            resultSet.getDate("registrationDate"),
+                            resultSet.getString("biography")
                     );
                 }
             }
