@@ -6,10 +6,10 @@ import com.manageexerciseroutine.model.Subscription;
 import java.util.List;
 
 public interface SubscriptionRepository {
-    List<Subscription> findBySubscriberId(int subscriberId) throws DatabaseOperationException;
 
+    List<Subscription> findActiveSubscriptionsByUserId(int userId) throws DatabaseOperationException;
 
-    void delete(Subscription subscription) throws DatabaseOperationException;
+    void markSubscriptionAsEnded(int subscriptionId) throws DatabaseOperationException;
 
     void save(Subscription subscription) throws DatabaseOperationException;
 

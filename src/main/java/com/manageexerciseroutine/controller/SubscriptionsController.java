@@ -34,9 +34,45 @@ public class SubscriptionsController {
 
     @FXML
     private TableColumn<Subscription, String> routineNameColumn;
-
+    @FXML
+    private TableColumn<Subscription, String> descriptionColumn;
     @FXML
     private TableColumn<Subscription, Integer> durationColumn;
+    @FXML
+    private TableColumn<Subscription, String> difficultyLevelColumn;
+    @FXML
+    private TableColumn<Subscription, String> trainingTypeColumn;
+    @FXML
+    private TableColumn<Subscription, String> trainerNameColumn;
+
+    @FXML
+    public void initialize() throws SQLException {
+        routineNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getName()));
+        descriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getDescription()));
+        durationColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getRoutine().getDuration()).asObject());
+        difficultyLevelColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getDifficultyLevel()));
+        trainingTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getTrainingType()));
+        trainerNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getTrainer().getName()));
+
+        // Buscar suscripciones del usuario logueado
+        List<Subscription> subscriptions = subscriptionService.findActiveSubscriptionsByUserId(userId);
+        subscriptionData.addAll(subscriptions);
+        subscriptionTable.setItems(subscriptionData);
+
+        // Añadir listener para seleccionar una suscripción
+        subscriptionTable.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                Subscription selectedSubscription = subscriptionTable.getSelectionModel().getSelectedItem();
+                if (selectedSubscription != null) {
+                    try {
+                        showConfiguredExercises(selectedSubscription);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
 
     private final ObservableList<Subscription> subscriptionData = FXCollections.observableArrayList();
     private final SubscriptionService subscriptionService;
@@ -45,29 +81,6 @@ public class SubscriptionsController {
     public SubscriptionsController(SubscriptionService subscriptionService, int userId) {
         this.subscriptionService = subscriptionService;
         this.userId = userId;
-    }
-
-    @FXML
-    public void initialize() throws DatabaseOperationException, SQLException {
-        // Inicializar columnas
-        routineNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getName()));
-        durationColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getRoutine().getDuration()).asObject());
-
-        // Buscar suscripciones del usuario logueado
-        List<Subscription> subscriptions = subscriptionService.findSubscriptionsByUserId(userId);
-        subscriptionData.addAll(subscriptions);
-        subscriptionTable.setItems(subscriptionData);
-
-        // Añadir listener para seleccionar una suscripción
-        subscriptionTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, selectedSubscription) -> {
-            if (selectedSubscription != null) {
-                try {
-                    showConfiguredExercises(selectedSubscription);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     private void showConfiguredExercises(Subscription subscription) throws Exception {
@@ -100,21 +113,25 @@ public class SubscriptionsController {
     public void handleSubscribeToNewRoutine() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/choose_routine_view.fxml"));
-            Parent root = loader.load();
-
             // Pasar el controlador con userId
-            ChooseRoutineController controller = loader.getController();
+            ChooseRoutineController controller = new ChooseRoutineController();
             controller.setUserId(userId);
             controller.setSubscriptionService(subscriptionService);
 
+            loader.setController(controller);
+
+            Parent root = loader.load();
+
             Stage stage = new Stage();
             stage.setTitle("Elegir Nueva Rutina");
-            stage.setScene(new Scene(root));
+            stage.setScene(new Scene(root, 400, 400));
+
+            stage.setMaximized(true); // Maximizar la ventana
             stage.showAndWait();
 
             // Actualizar la tabla después de la suscripción
             subscriptionData.clear();
-            subscriptionData.addAll(subscriptionService.findSubscriptionsByUserId(userId));
+            subscriptionData.addAll(subscriptionService.findActiveSubscriptionsByUserId(userId));
 
         } catch (IOException | DatabaseOperationException e) {
             e.printStackTrace();
@@ -124,18 +141,23 @@ public class SubscriptionsController {
         }
     }
 
-    // Método para eliminar una suscripción
+    // SubscriptionsController.java
     @FXML
-    public void handleDeleteSubscription() throws DatabaseOperationException, SQLException {
+    public void handleEndSubscription() {
         Subscription selectedSubscription = subscriptionTable.getSelectionModel().getSelectedItem();
         if (selectedSubscription != null) {
-            Optional<ButtonType> result = showAlert(Alert.AlertType.CONFIRMATION, "Confirmar Eliminación", "¿Deseas eliminar esta suscripción?");
+            Optional<ButtonType> result = showAlert(Alert.AlertType.CONFIRMATION, "Confirmar Terminación", "¿Estás seguro de que deseas terminar esta suscripción?");
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                subscriptionService.deleteSubscription(selectedSubscription);
-                subscriptionData.remove(selectedSubscription); // Actualizar la tabla
+                try {
+                    subscriptionService.endSubscription(selectedSubscription.getId());  // Marcar la suscripción como terminada
+                    subscriptionData.remove(selectedSubscription);  // Remover de la tabla
+                    showAlert(Alert.AlertType.INFORMATION, "Subscripción Terminada", "La suscripción ha sido terminada exitosamente.");
+                } catch (SQLException e) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "No se pudo terminar la suscripción: " + e.getMessage());
+                }
             }
         } else {
-            showAlert(Alert.AlertType.WARNING, "Selección vacía", "Selecciona una suscripción para eliminar.");
+            showAlert(Alert.AlertType.WARNING, "Selección vacía", "Por favor selecciona una suscripción para terminar.");
         }
     }
 

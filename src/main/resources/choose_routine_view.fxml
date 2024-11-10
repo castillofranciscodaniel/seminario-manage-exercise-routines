@@ -3,18 +3,24 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      alignment="CENTER" spacing="10" padding="20">
+      alignment="CENTER" spacing="10">
 
     <TableView fx:id="routineTable">
         <columns>
-            <TableColumn fx:id="nameColumn" text="Nombre"/>
+            <TableColumn fx:id="routineNameColumn" text="Nombre de Rutina"/>
             <TableColumn fx:id="descriptionColumn" text="Descripción"/>
-            <TableColumn fx:id="durationColumn" text="Duración"/>
+            <TableColumn fx:id="durationColumn" text="Duración (min)"/>
+            <TableColumn fx:id="difficultyLevelColumn" text="Nivel de Dificultad"/>
+            <TableColumn fx:id="trainingTypeColumn" text="Tipo de Entrenamiento"/>
+            <TableColumn fx:id="trainerNameColumn" text="Entrenador"/>
         </columns>
     </TableView>
 
-    <Button text="Suscribirse" onAction="#handleSubscribe"/>
+    <HBox alignment="CENTER" spacing="10">
+        <Button text="Suscribirse a Rutina" onAction="#handleSubscribe"/>
+    </HBox>
 </VBox>

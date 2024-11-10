@@ -13,6 +13,10 @@ public class Trainer extends User {
     private String specialty;
     private List<Routine> Routine;
 
+    public Trainer(String name) {
+        super(name);
+    }
+
     public Trainer(String name, String email, String password, String specialty, String biography) {
         super(name, email, password, biography);
         this.specialty = specialty;

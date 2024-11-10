@@ -107,6 +107,7 @@ public class LoginController {
         Stage stage = new Stage();
         stage.setTitle("Mis suscripciones");
         stage.setScene(new Scene(root, 600, 400));
+        stage.setMaximized(true); // Maximizar la ventana
         stage.show();
     }
 

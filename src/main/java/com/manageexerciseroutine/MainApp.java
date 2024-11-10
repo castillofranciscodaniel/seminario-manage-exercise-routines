@@ -39,6 +39,7 @@ public class MainApp extends Application {
         // Configurar la escena
         primaryStage.setTitle("Login");
         primaryStage.setScene(new Scene(root, 400, 400));
+        primaryStage.setMaximized(true); // Maximizar la ventana
         primaryStage.show();
     }
 

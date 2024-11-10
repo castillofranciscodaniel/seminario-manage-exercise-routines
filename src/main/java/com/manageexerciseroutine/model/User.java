@@ -17,6 +17,10 @@ public class User {
     protected Date registrationDate;
     private String biography;
 
+    public User(String name) {
+        this.name = name;
+    }
+
     public User(String name, String email, String password, String biography) {
         this.name = name;
         this.email = email;

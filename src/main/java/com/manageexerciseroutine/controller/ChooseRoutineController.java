@@ -23,11 +23,17 @@ public class ChooseRoutineController {
     @FXML
     private TableView<Routine> routineTable;
     @FXML
-    private TableColumn<Routine, String> nameColumn;
+    private TableColumn<Routine, String> routineNameColumn;
     @FXML
     private TableColumn<Routine, String> descriptionColumn;
     @FXML
     private TableColumn<Routine, Integer> durationColumn;
+    @FXML
+    private TableColumn<Routine, String> difficultyLevelColumn;
+    @FXML
+    private TableColumn<Routine, String> trainingTypeColumn;
+    @FXML
+    private TableColumn<Routine, String> trainerNameColumn;
 
     private final ObservableList<Routine> routineData = FXCollections.observableArrayList();
     private SubscriptionService subscriptionService;
@@ -35,24 +41,23 @@ public class ChooseRoutineController {
 
     private final RoutineService routineService = new RoutineService();
 
-    // Establecer el ID del usuario logueado
     public void setUserId(int userId) {
         this.userId = userId;
     }
 
-    // Establecer el servicio de suscripciones
     public void setSubscriptionService(SubscriptionService subscriptionService) {
         this.subscriptionService = subscriptionService;
     }
 
     @FXML
     public void initialize() {
-        // Configuración de las columnas de la tabla
-        nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
+        routineNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         descriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
         durationColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getDuration()).asObject());
+        difficultyLevelColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDifficultyLevel()));
+        trainingTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTrainingType()));
+        trainerNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTrainer().getName()));
 
-        // Cargar las rutinas disponibles
         loadRoutines();
     }
 
@@ -70,11 +75,9 @@ public class ChooseRoutineController {
     public void handleSubscribe() {
         Routine selectedRoutine = routineTable.getSelectionModel().getSelectedItem();
         if (selectedRoutine != null) {
-            // Confirmación de suscripción
             Optional<ButtonType> result = showAlert(Alert.AlertType.CONFIRMATION, "Confirmar Suscripción", "¿Deseas suscribirte a esta rutina?");
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
-                    // Realizar la suscripción
                     subscriptionService.subscribeToRoutine(userId, selectedRoutine);
                     showAlert(Alert.AlertType.INFORMATION, "Subscripción exitosa", "Te has suscrito a la rutina seleccionada.");
                 } catch (SQLException e) {

@@ -7,81 +7,65 @@ import com.manageexerciseroutine.model.Subscriber;
 import com.manageexerciseroutine.model.Subscription;
 import com.manageexerciseroutine.model.Trainer;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
-    public List<Subscription> findBySubscriberId(int subscriberId) throws DatabaseOperationException {
+    // SubscriptionRepository.java
+    public List<Subscription> findActiveSubscriptionsByUserId(int userId) throws DatabaseOperationException {
         String query = "SELECT s.id, s.startDate, s.endDate, s.status, " +
-                "sub.id as id, sub.name as subscriberName, sub.email as subscriberEmail, sub.registrationDate, " +
-                "r.id as id, r.name, r.description, r.duration, r.difficultyLevel, r.trainingType, " +
-                "t.id as id, t.name as trainerName, t.email as trainerEmail, t.specialty, t.biography " +
+                "r.id AS routineId, r.name AS routineName, r.description, r.duration, " +
+                "r.difficultyLevel, r.trainingType, " +
+                "t.id AS trainerId, t.name AS trainerName, t.email AS trainerEmail " +
                 "FROM Subscriptions s " +
-                "JOIN Subscribers sub ON s.user_id = sub.id " +
                 "JOIN Routines r ON s.routine_id = r.id " +
                 "JOIN Trainers t ON r.trainer_id = t.id " +
-                "WHERE s.user_id = ?";
+                "WHERE s.user_id = ? AND s.endDate IS NULL";  // Solo suscripciones activas
 
         List<Subscription> subscriptions = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, subscriberId);
+            statement.setInt(1, userId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    // Construir el objeto Subscriber
-
-                    var registration =  Calendar.getInstance();
-                    registration.setTime(resultSet.getDate("registrationDate"));
-
-                    Subscriber subscriber = new Subscriber(
-                            resultSet.getInt("id"),  // Ahora es id
-                            resultSet.getString("subscriberName"),
-                            resultSet.getString("subscriberEmail"),
-                            registration.getTime(),
-                            resultSet.getString("biography")
-                            );
-
-                    // Construir el objeto Trainer
                     Trainer trainer = new Trainer(
-                            resultSet.getInt("id"),  // Ahora es id
-                            resultSet.getString("trainerName"),
-                            resultSet.getString("trainerEmail"),
-                            resultSet.getString("specialty"),
-                            resultSet.getString("biography")
+                            resultSet.getString("trainerName")
                     );
 
-                    // Construir el objeto Routine
                     Routine routine = new Routine(
-                            resultSet.getInt("id"),  // Ahora es id
-                            resultSet.getString("name"),
+                            resultSet.getInt("routineId"),
+                            resultSet.getString("routineName"),
                             resultSet.getString("description"),
                             resultSet.getInt("duration"),
                             resultSet.getString("difficultyLevel"),
                             resultSet.getString("trainingType"),
-                            trainer  // Aquí usamos el objeto Trainer
+                            trainer
                     );
 
-                    // Construir el objeto Subscription
                     Subscription subscription = new Subscription(
-                            resultSet.getInt("id"),  // Ahora es id
+                            resultSet.getInt("id"),
                             resultSet.getDate("startDate"),
                             resultSet.getDate("endDate"),
                             resultSet.getString("status"),
-                            subscriber,
+                            new Subscriber(userId),
                             routine
                     );
+
                     subscriptions.add(subscription);
                 }
             }
         } catch (SQLException e) {
-            throw new DatabaseOperationException("Error executing query", e);
+            throw new RuntimeException(e);
         }
         return subscriptions;
     }
+
 
     @Override
     public void save(Subscription subscription) throws DatabaseOperationException {
@@ -119,15 +103,17 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
     }
 
     @Override
-    public void delete(Subscription subscription) throws DatabaseOperationException {
-        String query = "DELETE FROM Subscriptions WHERE id = ?";
+    public void markSubscriptionAsEnded(int subscriptionId) throws DatabaseOperationException {
+        String query = "UPDATE Subscriptions SET endDate = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, subscription.getId());  // Ahora es id
+            statement.setDate(1, new java.sql.Date(System.currentTimeMillis()));  // Establece la fecha de finalización actual
+            statement.setInt(2, subscriptionId);
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseOperationException("Error executing query", e);
         }
     }
+
 }

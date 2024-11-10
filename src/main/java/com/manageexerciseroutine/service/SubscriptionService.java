@@ -21,8 +21,8 @@ public class SubscriptionService {
         this.subscriptionRepository = new SubscriptionRepositoryImpl();
     }
 
-    public List<Subscription> findSubscriptionsByUserId(int userId) throws SQLException {
-        return subscriptionRepository.findBySubscriberId(userId);
+    public List<Subscription> findActiveSubscriptionsByUserId(int userId) throws SQLException {
+        return subscriptionRepository.findActiveSubscriptionsByUserId(userId);
     }
 
     public void subscribeToRoutine(int userId, Routine routine) throws SQLException {
@@ -36,7 +36,8 @@ public class SubscriptionService {
         subscriptionRepository.save(newSubscription);
     }
 
-    public void deleteSubscription(Subscription subscription) throws SQLException {
-        subscriptionRepository.delete(subscription);
+    // SubscriptionService.java
+    public void endSubscription(int subscriptionId) throws SQLException {
+        subscriptionRepository.markSubscriptionAsEnded(subscriptionId);
     }
 }
