@@ -13,13 +13,19 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public class SubscriptionsController {
 
@@ -42,7 +48,7 @@ public class SubscriptionsController {
     }
 
     @FXML
-    public void initialize() throws DatabaseOperationException {
+    public void initialize() throws DatabaseOperationException, SQLException {
         // Inicializar columnas
         routineNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getName()));
         durationColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getRoutine().getDuration()).asObject());
@@ -87,5 +93,57 @@ public class SubscriptionsController {
     private SimpleStringProperty formatDate(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return new SimpleStringProperty(dateFormat.format(date));
+    }
+
+    // Método para suscribirse a nuevas rutinas
+    @FXML
+    public void handleSubscribeToNewRoutine() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/choose_routine_view.fxml"));
+            Parent root = loader.load();
+
+            // Pasar el controlador con userId
+            ChooseRoutineController controller = loader.getController();
+            controller.setUserId(userId);
+            controller.setSubscriptionService(subscriptionService);
+
+            Stage stage = new Stage();
+            stage.setTitle("Elegir Nueva Rutina");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            // Actualizar la tabla después de la suscripción
+            subscriptionData.clear();
+            subscriptionData.addAll(subscriptionService.findSubscriptionsByUserId(userId));
+
+        } catch (IOException | DatabaseOperationException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana para elegir nuevas rutinas.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Método para eliminar una suscripción
+    @FXML
+    public void handleDeleteSubscription() throws DatabaseOperationException, SQLException {
+        Subscription selectedSubscription = subscriptionTable.getSelectionModel().getSelectedItem();
+        if (selectedSubscription != null) {
+            Optional<ButtonType> result = showAlert(Alert.AlertType.CONFIRMATION, "Confirmar Eliminación", "¿Deseas eliminar esta suscripción?");
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                subscriptionService.deleteSubscription(selectedSubscription);
+                subscriptionData.remove(selectedSubscription); // Actualizar la tabla
+            }
+        } else {
+            showAlert(Alert.AlertType.WARNING, "Selección vacía", "Selecciona una suscripción para eliminar.");
+        }
+    }
+
+    private Optional<ButtonType> showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        return alert.showAndWait();
     }
 }

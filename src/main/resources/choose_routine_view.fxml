@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      alignment="CENTER" spacing="10" padding="20">
+
+    <TableView fx:id="routineTable">
+        <columns>
+            <TableColumn fx:id="nameColumn" text="Nombre"/>
+            <TableColumn fx:id="descriptionColumn" text="Descripción"/>
+            <TableColumn fx:id="durationColumn" text="Duración"/>
+        </columns>
+    </TableView>
+
+    <Button text="Suscribirse" onAction="#handleSubscribe"/>
+</VBox>

@@ -93,7 +93,7 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
             statement.setDate(2, new java.sql.Date(subscription.getEndDate().getTime()));
             statement.setString(3, subscription.getStatus());
             statement.setInt(4, subscription.getSubscriber().getId());  // Ahora es id
-            statement.setInt(5, subscription.getRoutine().getId());  // Ahora es id
+            statement.setInt(5, subscription.getRoutine().getId());  // Ahora es
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseOperationException("Error executing query", e);

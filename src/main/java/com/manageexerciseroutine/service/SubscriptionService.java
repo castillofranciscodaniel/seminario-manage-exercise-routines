@@ -1,8 +1,10 @@
 package com.manageexerciseroutine.service;
 
-import com.manageexerciseroutine.exeptions.DatabaseOperationException;
+import com.manageexerciseroutine.model.Routine;
+import com.manageexerciseroutine.model.Subscriber;
 import com.manageexerciseroutine.model.Subscription;
 import com.manageexerciseroutine.repository.SubscriptionRepository;
+import com.manageexerciseroutine.repository.SubscriptionRepositoryImpl;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -15,18 +17,26 @@ public class SubscriptionService {
         this.subscriptionRepository = subscriptionRepository;
     }
 
-    // Método para encontrar suscripciones por ID de usuario
-    public List<Subscription> findSubscriptionsByUserId(int userId) throws DatabaseOperationException {
+    public SubscriptionService() {
+        this.subscriptionRepository = new SubscriptionRepositoryImpl();
+    }
+
+    public List<Subscription> findSubscriptionsByUserId(int userId) throws SQLException {
         return subscriptionRepository.findBySubscriberId(userId);
     }
 
-    // Método para guardar una nueva suscripción
-    public void saveSubscription(Subscription subscription) throws DatabaseOperationException {
-        subscriptionRepository.save(subscription);
+    public void subscribeToRoutine(int userId, Routine routine) throws SQLException {
+        // Crear una nueva suscripción con la información del usuario y la rutina
+        Subscription newSubscription = new Subscription();
+        newSubscription.setSubscriber(new Subscriber(userId));
+        newSubscription.setRoutine(routine);
+        newSubscription.setStartDate(new java.util.Date()); // Fecha de inicio actual
+
+        // Guardar la nueva suscripción en la base de datos
+        subscriptionRepository.save(newSubscription);
     }
 
-    // Método para eliminar una suscripción
-    public void deleteSubscription(Subscription subscription) throws DatabaseOperationException {
+    public void deleteSubscription(Subscription subscription) throws SQLException {
         subscriptionRepository.delete(subscription);
     }
 }

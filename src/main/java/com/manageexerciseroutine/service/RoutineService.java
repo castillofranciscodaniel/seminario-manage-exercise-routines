@@ -12,6 +12,9 @@ public class RoutineService {
 
     private final RoutineRepository routineRepository;
 
+    public RoutineService() {
+        this.routineRepository = new RoutineRepositoryImpl();
+    }
     public RoutineService(RoutineRepository routineRepository) {
         this.routineRepository = routineRepository;
     }

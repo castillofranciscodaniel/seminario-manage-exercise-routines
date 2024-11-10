@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      alignment="CENTER" spacing="10" padding="20">
 
     <TableView fx:id="subscriptionTable">
         <columns>
-            <TableColumn fx:id="routineNameColumn" text="Nombre de Rutina" />
-            <TableColumn fx:id="durationColumn" text="Duración" />
+            <TableColumn fx:id="routineNameColumn" text="Nombre de Rutina"/>
+            <TableColumn fx:id="durationColumn" text="Duración (min)"/>
         </columns>
     </TableView>
 
+    <HBox alignment="CENTER" spacing="10">
+        <Button text="Suscribirse a Nueva Rutina" onAction="#handleSubscribeToNewRoutine"/>
+        <Button text="Eliminar Subscripción" onAction="#handleDeleteSubscription"/>
+    </HBox>
 </VBox>
