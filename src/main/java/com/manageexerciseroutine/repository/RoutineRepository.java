@@ -11,7 +11,7 @@ public interface RoutineRepository {
     void save(Routine routine) throws DatabaseOperationException;
 
     // Método para obtener todas las rutinas
-    List<Routine> findAll() throws DatabaseOperationException;
+    List<Routine> findAll(int userId) throws DatabaseOperationException;
 
     // Método para actualizar una rutina existente
     void update(Routine routine) throws DatabaseOperationException;

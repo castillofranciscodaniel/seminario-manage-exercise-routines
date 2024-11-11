@@ -31,6 +31,7 @@ public class SubscriptionService {
         newSubscription.setSubscriber(new Subscriber(userId));
         newSubscription.setRoutine(routine);
         newSubscription.setStartDate(new java.util.Date()); // Fecha de inicio actual
+        newSubscription.setStatus(Subscription.Status.ACTIVE);
 
         // Guardar la nueva suscripción en la base de datos
         subscriptionRepository.save(newSubscription);

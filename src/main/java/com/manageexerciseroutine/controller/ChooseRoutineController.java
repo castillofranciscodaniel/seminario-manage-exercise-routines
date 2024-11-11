@@ -58,12 +58,12 @@ public class ChooseRoutineController {
         trainingTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTrainingType()));
         trainerNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTrainer().getName()));
 
-        loadRoutines();
+        loadRoutines(this.userId);
     }
 
-    private void loadRoutines() {
+    private void loadRoutines(int userId) {
         try {
-            List<Routine> routines = routineService.findAllRoutines();
+            List<Routine> routines = routineService.findAllRoutines(userId);
             routineData.addAll(routines);
             routineTable.setItems(routineData);
         } catch (DatabaseOperationException e) {
@@ -79,6 +79,7 @@ public class ChooseRoutineController {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
                     subscriptionService.subscribeToRoutine(userId, selectedRoutine);
+                    this.routineData.remove(selectedRoutine);
                     showAlert(Alert.AlertType.INFORMATION, "Subscripción exitosa", "Te has suscrito a la rutina seleccionada.");
                 } catch (SQLException e) {
                     showAlert(Alert.AlertType.ERROR, "Error", "No se pudo completar la suscripción: " + e.getMessage());

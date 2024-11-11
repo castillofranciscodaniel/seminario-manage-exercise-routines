@@ -19,8 +19,8 @@ public class RoutineService {
         this.routineRepository = routineRepository;
     }
 
-    public List<Routine> findAllRoutines() throws DatabaseOperationException {
-        return routineRepository.findAll();
+    public List<Routine> findAllRoutines(int userId) throws DatabaseOperationException {
+        return routineRepository.findAll(userId);
     }
 
     public void saveRoutine(Routine routine) throws DatabaseOperationException {

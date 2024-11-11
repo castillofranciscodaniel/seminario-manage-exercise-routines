@@ -13,7 +13,11 @@ public class Subscription {
     private int id;
     private Date startDate;
     private Date endDate;
-    private String status;
+    private Status status;
     private Subscriber subscriber;
     private Routine routine;
+
+    public static enum Status {
+        ACTIVE, ENDED
+    }
 }

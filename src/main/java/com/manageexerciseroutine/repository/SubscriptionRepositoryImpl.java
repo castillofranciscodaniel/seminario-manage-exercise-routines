@@ -7,11 +7,9 @@ import com.manageexerciseroutine.model.Subscriber;
 import com.manageexerciseroutine.model.Subscription;
 import com.manageexerciseroutine.model.Trainer;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class SubscriptionRepositoryImpl implements SubscriptionRepository {
@@ -25,13 +23,15 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
                 "FROM Subscriptions s " +
                 "JOIN Routines r ON s.routine_id = r.id " +
                 "JOIN Trainers t ON r.trainer_id = t.id " +
-                "WHERE s.user_id = ? AND s.endDate IS NULL";  // Solo suscripciones activas
+                "WHERE s.user_id = ? AND s.status = ?";  // Solo suscripciones activas
 
         List<Subscription> subscriptions = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, userId);
+            statement.setString(2, Subscription.Status.ACTIVE.toString());
+
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     Trainer trainer = new Trainer(
@@ -52,8 +52,8 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
                             resultSet.getInt("id"),
                             resultSet.getDate("startDate"),
                             resultSet.getDate("endDate"),
-                            resultSet.getString("status"),
-                            new Subscriber(userId),
+                            Subscription.Status.valueOf(resultSet.getString("status")),
+                            new Subscriber(userId),  // Suponiendo que solo se necesita el ID
                             routine
                     );
 
@@ -61,7 +61,7 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseOperationException("Error al recuperar suscripciones activas para el usuario.", e);
         }
         return subscriptions;
     }
@@ -69,15 +69,14 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
     @Override
     public void save(Subscription subscription) throws DatabaseOperationException {
-        String query = "INSERT INTO Subscriptions (startDate, endDate, status, subscriber_id, routine_id) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Subscriptions (startDate, status, user_id, routine_id) VALUES (?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setDate(1, new java.sql.Date(subscription.getStartDate().getTime()));
-            statement.setDate(2, new java.sql.Date(subscription.getEndDate().getTime()));
-            statement.setString(3, subscription.getStatus());
-            statement.setInt(4, subscription.getSubscriber().getId());  // Ahora es id
-            statement.setInt(5, subscription.getRoutine().getId());  // Ahora es
+            statement.setString(2, subscription.getStatus().toString());
+            statement.setInt(3, subscription.getSubscriber().getId());  // Ahora es id
+            statement.setInt(4, subscription.getRoutine().getId());  // Ahora es
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseOperationException("Error executing query", e);
@@ -92,7 +91,7 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setDate(1, new java.sql.Date(subscription.getStartDate().getTime()));
             statement.setDate(2, new java.sql.Date(subscription.getEndDate().getTime()));
-            statement.setString(3, subscription.getStatus());
+            statement.setString(3, subscription.getStatus().toString());
             statement.setInt(4, subscription.getSubscriber().getId());  // Ahora es id
             statement.setInt(5, subscription.getRoutine().getId());  // Ahora es id
             statement.setInt(6, subscription.getId());  // Ahora es id
@@ -104,16 +103,16 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
     @Override
     public void markSubscriptionAsEnded(int subscriptionId) throws DatabaseOperationException {
-        String query = "UPDATE Subscriptions SET endDate = ? WHERE id = ?";
+        String query = "UPDATE Subscriptions SET endDate = ?, status = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setDate(1, new java.sql.Date(System.currentTimeMillis()));  // Establece la fecha de finalización actual
-            statement.setInt(2, subscriptionId);
+            statement.setDate(1, new Date(Calendar.getInstance().getTime().getTime()));  // Establece la fecha de finalización actual
+            statement.setString(2, Subscription.Status.ENDED.toString());
+            statement.setInt(3, subscriptionId);
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseOperationException("Error executing query", e);
         }
     }
-
 }

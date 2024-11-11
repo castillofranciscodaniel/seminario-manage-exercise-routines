@@ -3,6 +3,7 @@ package com.manageexerciseroutine.repository;
 import com.manageexerciseroutine.configuration.DatabaseConnection;
 import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Routine;
+import com.manageexerciseroutine.model.Subscription;
 import com.manageexerciseroutine.model.Trainer;
 
 import java.sql.*;
@@ -11,45 +12,61 @@ import java.util.List;
 
 public class RoutineRepositoryImpl implements RoutineRepository {
 
+    // RoutineRepositoryImpl.java
     @Override
-    public List<Routine> findAll() throws DatabaseOperationException {
-        String query = "SELECT r.id, r.name, r.description, r.duration, r.difficultyLevel, r.trainingType, " +
-                "t.id as id, t.name as trainerName, t.email as trainerEmail, t.specialty, t.biography " +
+    public List<Routine> findAll(int userId) throws DatabaseOperationException {
+        String query = "SELECT DISTINCT r.id, r.name, r.description, r.duration, r.difficultyLevel, r.trainingType, " +
+                "t.id AS trainerId, t.name AS trainerName, t.email AS trainerEmail, t.specialty, t.biography " +
                 "FROM Routines r " +
-                "JOIN Trainers t ON r.trainer_id = t.id";
+                "JOIN Trainers t ON r.trainer_id = t.id " +
+                "LEFT JOIN Subscriptions s ON s.routine_id = r.id AND s.user_id = ? " +
+                "WHERE s.id IS NULL OR (s.status = ? AND s.endDate IS NOT NULL) " +
+                "AND NOT EXISTS (" +
+                "    SELECT 1 FROM Subscriptions s2 " +
+                "    WHERE s2.routine_id = r.id AND s2.user_id = ? AND s2.status = ? AND s2.endDate IS NULL" +
+                ")";
 
         List<Routine> routines = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet resultSet = statement.executeQuery()) {
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, userId);  // Asignar el ID del usuario para la consulta principal
+            statement.setString(2, Subscription.Status.ENDED.toString());  // Filtrar por suscripciones terminadas
+            statement.setInt(3, userId);  // Usado en el subquery
+            statement.setString(4, Subscription.Status.ACTIVE.toString()); // Verificar si existe una suscripción activa
 
-            while (resultSet.next()) {
-                Trainer trainer = new Trainer(
-                        resultSet.getInt("id"),  // Ahora es solo id
-                        resultSet.getString("trainerName"),
-                        resultSet.getString("trainerEmail"),
-                        resultSet.getString("specialty"),
-                        resultSet.getString("biography")
-                );
+            try (ResultSet resultSet = statement.executeQuery()) {
 
-                Routine routine = new Routine(
-                        resultSet.getInt("id"),  // id de la rutina
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getInt("duration"),
-                        resultSet.getString("difficultyLevel"),
-                        resultSet.getString("trainingType"),
-                        trainer  // Aquí referenciamos al objeto Trainer
-                );
+                while (resultSet.next()) {
+                    Trainer trainer = new Trainer(
+                            resultSet.getInt("trainerId"),
+                            resultSet.getString("trainerName"),
+                            resultSet.getString("trainerEmail"),
+                            resultSet.getString("specialty"),
+                            resultSet.getString("biography")
+                    );
 
-                routines.add(routine);
+                    Routine routine = new Routine(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("description"),
+                            resultSet.getInt("duration"),
+                            resultSet.getString("difficultyLevel"),
+                            resultSet.getString("trainingType"),
+                            trainer
+                    );
+
+                    routines.add(routine);
+                }
             }
         } catch (SQLException e) {
-            throw new DatabaseOperationException("Error executing query", e);
+            throw new DatabaseOperationException("Error executing query to fetch routines", e);
         }
+
+        System.out.println("Routines: " + routines);
         return routines;
     }
+
 
     @Override
     public void save(Routine routine) throws DatabaseOperationException {
