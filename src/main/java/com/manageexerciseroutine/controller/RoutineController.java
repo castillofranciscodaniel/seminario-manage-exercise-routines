@@ -1,113 +1,110 @@
 package com.manageexerciseroutine.controller;
 
 import com.manageexerciseroutine.exeptions.DatabaseOperationException;
+import com.manageexerciseroutine.model.ConfiguredExercise;
 import com.manageexerciseroutine.model.Routine;
+import com.manageexerciseroutine.model.Trainer;
 import com.manageexerciseroutine.service.RoutineService;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import com.manageexerciseroutine.service.TrainerService;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import java.util.List;
-import java.util.Optional;
+import javafx.stage.Stage;
 
 public class RoutineController {
 
-    @FXML
-    private TableView<Routine> routineTable;
+    private final RoutineService routineService = new RoutineService();
+    private final TrainerService trainerService = new TrainerService();
+    private Trainer trainer;  // Cambiado para cargar el objeto completo desde el ID
+    private Routine routineToEdit;
 
     @FXML
-    private TableColumn<Routine, String> nameColumn;
+    private TextField nameField;
 
     @FXML
-    private TableColumn<Routine, String> descriptionColumn;
+    private TextArea descriptionField;
 
     @FXML
-    private TableColumn<Routine, Integer> durationColumn;
+    private TextField durationField;
 
-    private final RoutineService routineService;
-    private final ObservableList<Routine> routineData = FXCollections.observableArrayList();
+    @FXML
+    private ComboBox<String> difficultyLevelComboBox;
 
-    private final int trainerId; // ID del entrenador logueado
+    @FXML
+    private ComboBox<String> trainingTypeComboBox;
 
-    public RoutineController(RoutineService routineService, int trainerId) {
-        this.routineService = routineService;
-        this.trainerId = trainerId;
+    @FXML
+    private TableView<ConfiguredExercise> configuredExercisesTable;
+
+    public RoutineController(int trainerId) {
+        try {
+            this.trainer = trainerService.getTrainerById(trainerId); // Cargar el entrenador usando el ID
+        } catch (DatabaseOperationException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo cargar los datos del entrenador.");
+        }
+    }
+
+    public RoutineController(int trainerId, Routine routineToEdit) {
+        this(trainerId);
+        this.routineToEdit = routineToEdit;
     }
 
     @FXML
-    public void initialize() throws DatabaseOperationException {
-        // Inicializar columnas
-        nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
-        descriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
-        durationColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getDuration()).asObject());
+    public void initialize() {
+        difficultyLevelComboBox.setItems(FXCollections.observableArrayList("Beginner", "Intermediate", "Advanced"));
+        trainingTypeComboBox.setItems(FXCollections.observableArrayList("Strength", "Cardio", "Yoga", "Full-body"));
 
-        // Buscar rutinas del entrenador logueado
-        List<Routine> routines = routineService.findRoutinesByTrainerId(trainerId);
-        routineData.addAll(routines);
-        routineTable.setItems(routineData);
-    }
-
-    @FXML
-    public void handleCreateRoutine() throws DatabaseOperationException {
-        Routine newRoutine = showRoutineDialog(new Routine());
-        if (newRoutine != null) {
-            routineService.saveRoutine(newRoutine); // Guardar en la base de datos
-            routineData.add(newRoutine); // Actualizar la tabla
+        if (routineToEdit != null) {
+            nameField.setText(routineToEdit.getName());
+            descriptionField.setText(routineToEdit.getDescription());
+            durationField.setText(String.valueOf(routineToEdit.getDuration()));
+            difficultyLevelComboBox.setValue(routineToEdit.getDifficultyLevel());
+            trainingTypeComboBox.setValue(routineToEdit.getTrainingType());
         }
     }
 
     @FXML
-    public void handleEditRoutine() throws DatabaseOperationException {
-        Routine selectedRoutine = routineTable.getSelectionModel().getSelectedItem();
-        if (selectedRoutine != null) {
-            Routine updatedRoutine = showRoutineDialog(selectedRoutine);
-            if (updatedRoutine != null) {
-                routineService.updateRoutine(updatedRoutine); // Actualizar en la base de datos
-                routineTable.refresh(); // Refrescar la tabla
+    private void handleSaveRoutine() {
+        try {
+            if (routineToEdit == null) {
+                routineToEdit = new Routine();
             }
-        } else {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a routine to edit.");
-        }
-    }
 
-    @FXML
-    public void handleDeleteRoutine() throws DatabaseOperationException {
-        Routine selectedRoutine = routineTable.getSelectionModel().getSelectedItem();
-        if (selectedRoutine != null) {
-            Optional<ButtonType> result = showAlert(Alert.AlertType.CONFIRMATION, "Confirm Delete", "Are you sure you want to delete this routine?");
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                routineService.deleteRoutine(selectedRoutine); // Eliminar de la base de datos
-                routineData.remove(selectedRoutine); // Remover de la tabla
+            routineToEdit.setName(nameField.getText());
+            routineToEdit.setDescription(descriptionField.getText());
+            routineToEdit.setDuration(Integer.parseInt(durationField.getText()));
+            routineToEdit.setDifficultyLevel(difficultyLevelComboBox.getValue());
+            routineToEdit.setTrainingType(trainingTypeComboBox.getValue());
+            routineToEdit.setTrainer(trainer);
+
+            if (routineToEdit.getId() == 0) {
+                routineService.saveRoutine(routineToEdit);
+            } else {
+                routineService.updateRoutine(routineToEdit);
             }
-        } else {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a routine to delete.");
+
+            showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Rutina guardada exitosamente!");
+            closeWindow();
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo guardar la rutina.");
         }
     }
 
-    private Routine showRoutineDialog(Routine routine) {
-        // Este código es muy básico; idealmente tendrías una ventana de diálogo más completa para editar la rutina
-        TextInputDialog dialog = new TextInputDialog(routine.getName());
-        dialog.setTitle("Routine Dialog");
-        dialog.setHeaderText("Enter routine details:");
-        dialog.setContentText("Routine Name:");
-
-        Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()) {
-            routine.setName(result.get());
-            routine.setDescription("Sample description");  // Este valor debería ser ajustable en un formulario más completo
-            routine.setDuration(60);  // Duración de ejemplo, debe ser ajustable
-            return routine;
-        }
-        return null;
+    private void closeWindow() {
+        Stage stage = (Stage) nameField.getScene().getWindow();
+        stage.close();
     }
 
-    private Optional<ButtonType> showAlert(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
         alert.setTitle(title);
-        alert.setHeaderText(null);
         alert.setContentText(message);
-        return alert.showAndWait();
+        alert.showAndWait();
     }
+
 }
+
+
+
+

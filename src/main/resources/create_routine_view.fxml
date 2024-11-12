@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" spacing="10" alignment="CENTER">
+
+    <Label text="Crear Nueva Rutina" style="-fx-font-size: 16px;"/>
+    <HBox spacing="10">
+        <VBox>
+            <Label text="Nombre"/>
+            <TextField fx:id="nameField"/>
+            <Label text="Descripción"/>
+            <TextArea fx:id="descriptionField"/>
+            <Label text="Duración (min)"/>
+            <TextField fx:id="durationField"/>
+            <Label text="Nivel de Dificultad"/>
+            <ComboBox fx:id="difficultyLevelComboBox"/>
+            <Label text="Tipo de Entrenamiento"/>
+            <ComboBox fx:id="trainingTypeComboBox"/>
+        </VBox>
+        <VBox>
+            <Label text="Ejercicios Disponibles"/>
+            <TableView fx:id="availableExercisesTable">
+                <columns>
+                    <TableColumn fx:id="exerciseNameColumn" text="Nombre"/>
+                    <TableColumn fx:id="exerciseDurationColumn" text="Duración"/>
+                </columns>
+            </TableView>
+            <Button text="Agregar Ejercicio" onAction="#handleAddExercise"/>
+            <Label text="Ejercicios Configurados"/>
+            <TableView fx:id="configuredExercisesTable">
+                <columns>
+                    <TableColumn fx:id="orderColumn" text="Orden"/>
+                    <TableColumn fx:id="repetitionsColumn" text="Repeticiones"/>
+                    <TableColumn fx:id="seriesColumn" text="Series"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </HBox>
+    <Button text="Guardar Rutina" onAction="#handleCreateRoutine"/>
+</VBox>
