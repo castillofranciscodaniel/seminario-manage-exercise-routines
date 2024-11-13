@@ -1,42 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.GridPane?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" spacing="10" alignment="CENTER">
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      alignment="CENTER" spacing="10">
 
-    <Label text="Crear Nueva Rutina" style="-fx-font-size: 16px;"/>
-    <HBox spacing="10">
-        <VBox>
-            <Label text="Nombre"/>
-            <TextField fx:id="nameField"/>
-            <Label text="Descripción"/>
-            <TextArea fx:id="descriptionField"/>
-            <Label text="Duración (min)"/>
-            <TextField fx:id="durationField"/>
-            <Label text="Nivel de Dificultad"/>
-            <ComboBox fx:id="difficultyLevelComboBox"/>
-            <Label text="Tipo de Entrenamiento"/>
-            <ComboBox fx:id="trainingTypeComboBox"/>
-        </VBox>
-        <VBox>
-            <Label text="Ejercicios Disponibles"/>
-            <TableView fx:id="availableExercisesTable">
-                <columns>
-                    <TableColumn fx:id="exerciseNameColumn" text="Nombre"/>
-                    <TableColumn fx:id="exerciseDurationColumn" text="Duración"/>
-                </columns>
-            </TableView>
-            <Button text="Agregar Ejercicio" onAction="#handleAddExercise"/>
-            <Label text="Ejercicios Configurados"/>
-            <TableView fx:id="configuredExercisesTable">
-                <columns>
-                    <TableColumn fx:id="orderColumn" text="Orden"/>
-                    <TableColumn fx:id="repetitionsColumn" text="Repeticiones"/>
-                    <TableColumn fx:id="seriesColumn" text="Series"/>
-                </columns>
-            </TableView>
-        </VBox>
+    <Label text="Crear/Editar Rutina" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="10" vgap="10" alignment="CENTER">
+        <Label text="Nombre de la Rutina:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Descripción:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextArea fx:id="descriptionField" GridPane.rowIndex="1" GridPane.columnIndex="1" prefRowCount="3"/>
+
+        <Label text="Duración (min):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="durationField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Nivel de Dificultad:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="difficultyLevelComboBox" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="Tipo de Entrenamiento:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="trainingTypeComboBox" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <Label text="Ejercicios Configurados:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+    <TableView fx:id="configuredExercisesTable" prefHeight="150" prefWidth="400">
+        <columns>
+            <TableColumn fx:id="exerciseNameColumn" text="Nombre del Ejercicio"/>
+            <TableColumn fx:id="orderColumn" text="Orden"/>
+            <TableColumn fx:id="repetitionsColumn" text="Repeticiones"/>
+            <TableColumn fx:id="seriesColumn" text="Series"/>
+            <TableColumn fx:id="restColumn" text="Descanso (s)"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Agregar Ejercicio" onAction="#handleAddExercise"/>
+        <Button text="Eliminar Ejercicio" onAction="#handleRemoveExercise"/>
     </HBox>
-    <Button text="Guardar Rutina" onAction="#handleCreateRoutine"/>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Guardar" onAction="#handleSaveRoutine"/>
+        <Button text="Cancelar" onAction="#closeWindow"/>
+    </HBox>
+
 </VBox>

@@ -79,7 +79,7 @@ public class RoutineABMController {
 
     private void openRoutineDialog(Routine routineToEdit) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/routine_form.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/create_routine_view.fxml"));
             RoutineController controller = routineToEdit == null ? new RoutineController(trainerId) : new RoutineController(trainerId, routineToEdit);
             loader.setController(controller);
             Parent root = loader.load();
@@ -91,6 +91,7 @@ public class RoutineABMController {
 
             loadRoutines();
         } catch (IOException e) {
+            System.out.println(e.getMessage());
             showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de rutina.");
         }
     }

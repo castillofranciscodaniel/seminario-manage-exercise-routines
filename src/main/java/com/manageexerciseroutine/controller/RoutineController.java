@@ -7,6 +7,7 @@ import com.manageexerciseroutine.model.Trainer;
 import com.manageexerciseroutine.service.RoutineService;
 import com.manageexerciseroutine.service.TrainerService;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -17,24 +18,31 @@ public class RoutineController {
     private final TrainerService trainerService = new TrainerService();
     private Trainer trainer;  // Cambiado para cargar el objeto completo desde el ID
     private Routine routineToEdit;
+    private final ObservableList<ConfiguredExercise> exercises = FXCollections.observableArrayList();
+
 
     @FXML
     private TextField nameField;
-
     @FXML
     private TextArea descriptionField;
-
     @FXML
     private TextField durationField;
-
     @FXML
     private ComboBox<String> difficultyLevelComboBox;
-
     @FXML
     private ComboBox<String> trainingTypeComboBox;
-
     @FXML
     private TableView<ConfiguredExercise> configuredExercisesTable;
+    @FXML
+    private TableColumn<ConfiguredExercise, String> exerciseNameColumn;
+    @FXML
+    private TableColumn<ConfiguredExercise, Integer> orderColumn;
+    @FXML
+    private TableColumn<ConfiguredExercise, Integer> repetitionsColumn;
+    @FXML
+    private TableColumn<ConfiguredExercise, Integer> seriesColumn;
+    @FXML
+    private TableColumn<ConfiguredExercise, Integer> restColumn;
 
     public RoutineController(int trainerId) {
         try {
@@ -65,31 +73,27 @@ public class RoutineController {
 
     @FXML
     private void handleSaveRoutine() {
-        try {
-            if (routineToEdit == null) {
-                routineToEdit = new Routine();
-            }
+        // Implementación para guardar la rutina (creación o actualización)
+        String name = nameField.getText();
+        String description = descriptionField.getText();
+        int duration = Integer.parseInt(durationField.getText());
+        String difficultyLevel = difficultyLevelComboBox.getValue();
+        String trainingType = trainingTypeComboBox.getValue();
 
-            routineToEdit.setName(nameField.getText());
-            routineToEdit.setDescription(descriptionField.getText());
-            routineToEdit.setDuration(Integer.parseInt(durationField.getText()));
-            routineToEdit.setDifficultyLevel(difficultyLevelComboBox.getValue());
-            routineToEdit.setTrainingType(trainingTypeComboBox.getValue());
-            routineToEdit.setTrainer(trainer);
+        Routine routine = routineToEdit == null ? new Routine() : routineToEdit;
+        routine.setName(name);
+        routine.setDescription(description);
+        routine.setDuration(duration);
+        routine.setDifficultyLevel(difficultyLevel);
+        routine.setTrainingType(trainingType);
+        routine.setTrainer(trainer);
 
-            if (routineToEdit.getId() == 0) {
-                routineService.saveRoutine(routineToEdit);
-            } else {
-                routineService.updateRoutine(routineToEdit);
-            }
-
-            showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Rutina guardada exitosamente!");
-            closeWindow();
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo guardar la rutina.");
-        }
+        // Guardar la rutina en la base de datos y cerrar la ventana
+        // (La implementación de guardado debe realizarse aquí o en un servicio)
+        closeWindow();
     }
 
+    @FXML
     private void closeWindow() {
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
@@ -101,6 +105,21 @@ public class RoutineController {
         alert.setTitle(title);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    public void handleAddExercise() {
+        // Lógica para agregar un ejercicio configurado a la lista
+        ConfiguredExercise newExercise = new ConfiguredExercise();  // Crea una nueva instancia con valores de ejemplo o seleccionados
+        exercises.add(newExercise);
+    }
+
+    @FXML
+    public void handleRemoveExercise() {
+        ConfiguredExercise selectedExercise = configuredExercisesTable.getSelectionModel().getSelectedItem();
+        if (selectedExercise != null) {
+            exercises.remove(selectedExercise);
+        }
     }
 
 }
