@@ -9,8 +9,14 @@ import com.manageexerciseroutine.service.TrainerService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 public class RoutineController {
 
@@ -59,15 +65,21 @@ public class RoutineController {
 
     @FXML
     public void initialize() {
-        difficultyLevelComboBox.setItems(FXCollections.observableArrayList("Beginner", "Intermediate", "Advanced"));
-        trainingTypeComboBox.setItems(FXCollections.observableArrayList("Strength", "Cardio", "Yoga", "Full-body"));
+        difficultyLevelComboBox.setItems(FXCollections.observableArrayList(
+                Arrays.stream(Routine.DifficultyLevel.values()).map(Enum::name).toList())
+        );
+
+        trainingTypeComboBox.setItems(FXCollections.observableArrayList(
+                        Arrays.stream(Routine.TrainingType.values()).map(Enum::name).toList()
+                )
+        );
 
         if (routineToEdit != null) {
             nameField.setText(routineToEdit.getName());
             descriptionField.setText(routineToEdit.getDescription());
             durationField.setText(String.valueOf(routineToEdit.getDuration()));
-            difficultyLevelComboBox.setValue(routineToEdit.getDifficultyLevel());
-            trainingTypeComboBox.setValue(routineToEdit.getTrainingType());
+            difficultyLevelComboBox.setValue(routineToEdit.getDifficultyLevel().name());
+            trainingTypeComboBox.setValue(routineToEdit.getTrainingType().name());
         }
     }
 
@@ -84,8 +96,8 @@ public class RoutineController {
         routine.setName(name);
         routine.setDescription(description);
         routine.setDuration(duration);
-        routine.setDifficultyLevel(difficultyLevel);
-        routine.setTrainingType(trainingType);
+        routine.setDifficultyLevel(Routine.DifficultyLevel.valueOf(difficultyLevel));
+        routine.setTrainingType(Routine.TrainingType.valueOf(trainingType));
         routine.setTrainer(trainer);
 
         // Guardar la rutina en la base de datos y cerrar la ventana
@@ -109,10 +121,28 @@ public class RoutineController {
 
     @FXML
     public void handleAddExercise() {
-        // Lógica para agregar un ejercicio configurado a la lista
-        ConfiguredExercise newExercise = new ConfiguredExercise();  // Crea una nueva instancia con valores de ejemplo o seleccionados
-        exercises.add(newExercise);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/configured_exercise_form.fxml"));
+            ConfiguredExerciseController controller = new ConfiguredExerciseController(trainer.getId(), routineToEdit);
+            loader.setController(controller);
+
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Agregar Ejercicio Configurado");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            // Después de que el usuario guarda el ejercicio, lo añadimos a la lista
+            ConfiguredExercise newExercise = controller.getConfiguredExercise();
+            if (newExercise != null) {
+                exercises.add(newExercise);
+                configuredExercisesTable.refresh();
+            }
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de configuración de ejercicios.");
+        }
     }
+
 
     @FXML
     public void handleRemoveExercise() {

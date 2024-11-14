@@ -52,8 +52,8 @@ public class RoutineRepositoryImpl implements RoutineRepository {
                             resultSet.getString("name"),
                             resultSet.getString("description"),
                             resultSet.getInt("duration"),
-                            resultSet.getString("difficultyLevel"),
-                            resultSet.getString("trainingType"),
+                            Routine.DifficultyLevel.valueOf(resultSet.getString("difficultyLevel")),
+                            Routine.TrainingType.valueOf(resultSet.getString("trainingType")),
                             trainer
                     );
 
@@ -82,8 +82,8 @@ public class RoutineRepositoryImpl implements RoutineRepository {
                 routineStmt.setString(1, routine.getName());
                 routineStmt.setString(2, routine.getDescription());
                 routineStmt.setInt(3, routine.getDuration());
-                routineStmt.setString(4, routine.getDifficultyLevel());
-                routineStmt.setString(5, routine.getTrainingType());
+                routineStmt.setString(4, routine.getDifficultyLevel().name());
+                routineStmt.setString(5, routine.getTrainingType().name());
                 routineStmt.setInt(6, routine.getTrainer().getId());
                 routineStmt.executeUpdate();
 
@@ -126,8 +126,8 @@ public class RoutineRepositoryImpl implements RoutineRepository {
             statement.setString(1, routine.getName());
             statement.setString(2, routine.getDescription());
             statement.setInt(3, routine.getDuration());
-            statement.setString(4, routine.getDifficultyLevel());
-            statement.setString(5, routine.getTrainingType());
+            statement.setString(4, routine.getDifficultyLevel().name());
+            statement.setString(5, routine.getTrainingType().name());
             statement.setInt(6, routine.getTrainer().getId());  // Ahora es id
             statement.setInt(7, routine.getId());
             statement.executeUpdate();
@@ -178,8 +178,8 @@ public class RoutineRepositoryImpl implements RoutineRepository {
                             resultSet.getString("name"),
                             resultSet.getString("description"),
                             resultSet.getInt("duration"),
-                            resultSet.getString("difficultyLevel"),
-                            resultSet.getString("trainingType"),
+                            Routine.DifficultyLevel.valueOf(resultSet.getString("difficultyLevel")),
+                            Routine.TrainingType.valueOf(resultSet.getString("trainingType")),
                             trainer  // Asignar el objeto Trainer
                     );
                 }

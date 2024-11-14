@@ -51,8 +51,8 @@ public class ConfiguredExerciseRepositoryImpl implements ConfiguredExerciseRepos
                             resultSet.getString("routineName"),
                             resultSet.getString("routineDescription"),
                             resultSet.getInt("routineDuration"),
-                            resultSet.getString("difficultyLevel"),
-                            resultSet.getString("trainingType"),
+                            Routine.DifficultyLevel.valueOf(resultSet.getString("difficultyLevel")),
+                            Routine.TrainingType.valueOf(resultSet.getString("trainingType")),
                             null  // Omitimos el trainer aquí para esta consulta
                     );
 

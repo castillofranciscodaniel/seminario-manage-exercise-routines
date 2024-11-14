@@ -50,8 +50,8 @@ public class SubscriptionsController {
         routineNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getName()));
         descriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getDescription()));
         durationColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getRoutine().getDuration()).asObject());
-        difficultyLevelColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getDifficultyLevel()));
-        trainingTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getTrainingType()));
+        difficultyLevelColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getDifficultyLevel().name()));
+        trainingTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getTrainingType().name()));
         trainerNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRoutine().getTrainer().getName()));
 
         // Buscar suscripciones del usuario logueado

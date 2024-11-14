@@ -54,8 +54,8 @@ public class ChooseRoutineController {
         routineNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         descriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
         durationColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getDuration()).asObject());
-        difficultyLevelColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDifficultyLevel()));
-        trainingTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTrainingType()));
+        difficultyLevelColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDifficultyLevel().name()));
+        trainingTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTrainingType().name()));
         trainerNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTrainer().getName()));
 
         loadRoutines(this.userId);

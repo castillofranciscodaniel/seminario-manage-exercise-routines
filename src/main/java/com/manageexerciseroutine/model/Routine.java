@@ -15,13 +15,13 @@ public class Routine {
     private String name;
     private String description;
     private int duration;
-    private String difficultyLevel;
-    private String trainingType;
+    private DifficultyLevel difficultyLevel;
+    private TrainingType trainingType;
     private Trainer trainer;
 
     private List<ConfiguredExercise> configuredExercises = new ArrayList<>();
 
-    public Routine(int id, String name, String description, int duration, String difficultyLevel, String trainingType,
+    public Routine(int id, String name, String description, int duration, DifficultyLevel difficultyLevel, TrainingType trainingType,
                    Trainer trainer) {
         this.id = id;
         this.name = name;
@@ -30,5 +30,14 @@ public class Routine {
         this.difficultyLevel = difficultyLevel;
         this.trainingType = trainingType;
         this.trainer = trainer;
+    }
+
+
+    public enum DifficultyLevel {
+        BEGINNER, INTERMEDIATE, ADVANCED;
+    }
+
+    public enum TrainingType {
+        STRENGTH, CARDIO, YOGA, FULL_BODY;
     }
 }

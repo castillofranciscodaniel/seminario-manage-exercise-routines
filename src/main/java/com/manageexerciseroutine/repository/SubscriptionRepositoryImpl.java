@@ -43,8 +43,8 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
                             resultSet.getString("routineName"),
                             resultSet.getString("description"),
                             resultSet.getInt("duration"),
-                            resultSet.getString("difficultyLevel"),
-                            resultSet.getString("trainingType"),
+                            Routine.DifficultyLevel.valueOf(resultSet.getString("difficultyLevel")),
+                            Routine.TrainingType.valueOf(resultSet.getString("trainingType")),
                             trainer
                     );
 

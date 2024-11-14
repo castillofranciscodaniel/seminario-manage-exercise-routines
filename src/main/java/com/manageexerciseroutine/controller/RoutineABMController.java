@@ -86,7 +86,8 @@ public class RoutineABMController {
 
             Stage stage = new Stage();
             stage.setTitle(routineToEdit == null ? "Crear Rutina" : "Editar Rutina");
-            stage.setScene(new Scene(root));
+            stage.setScene(new Scene(root, 600, 400));
+            stage.setMaximized(true); // Maximizar la ventana
             stage.showAndWait();
 
             loadRoutines();
