@@ -2,7 +2,6 @@ package com.manageexerciseroutine.repository;
 
 import com.manageexerciseroutine.configuration.DatabaseConnection;
 import com.manageexerciseroutine.exeptions.DatabaseOperationException;
-import com.manageexerciseroutine.model.ConfiguredExercise;
 import com.manageexerciseroutine.model.Routine;
 import com.manageexerciseroutine.model.Subscription;
 import com.manageexerciseroutine.model.Trainer;
@@ -70,50 +69,36 @@ public class RoutineRepositoryImpl implements RoutineRepository {
 
 
     @Override
-    public void save(Routine routine) throws DatabaseOperationException {
-        String insertRoutineQuery = "INSERT INTO Routines (name, description, duration, difficultyLevel, trainingType, trainer_id) VALUES (?, ?, ?, ?, ?, ?)";
-        String insertConfiguredExerciseQuery = "INSERT INTO ConfiguredExercises (orderIndex, repetitions, series, exercise_id, routine_id) VALUES (?, ?, ?, ?, ?)";
+    public Routine save(Routine routine) throws DatabaseOperationException {
+        String query = "INSERT INTO Routines (name, description, duration, difficultyLevel, trainingType, trainer_id) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            connection.setAutoCommit(false);
+            statement.setString(1, routine.getName());
+            statement.setString(2, routine.getDescription());
+            statement.setInt(3, routine.getDuration());
+            statement.setString(4, routine.getDifficultyLevel().toString());
+            statement.setString(5, routine.getTrainingType().toString());
+            statement.setInt(6, routine.getTrainer().getId());
 
-            try (PreparedStatement routineStmt = connection.prepareStatement(insertRoutineQuery, Statement.RETURN_GENERATED_KEYS)) {
-                // Guardar rutina
-                routineStmt.setString(1, routine.getName());
-                routineStmt.setString(2, routine.getDescription());
-                routineStmt.setInt(3, routine.getDuration());
-                routineStmt.setString(4, routine.getDifficultyLevel().name());
-                routineStmt.setString(5, routine.getTrainingType().name());
-                routineStmt.setInt(6, routine.getTrainer().getId());
-                routineStmt.executeUpdate();
+            int affectedRows = statement.executeUpdate();
 
-                ResultSet generatedKeys = routineStmt.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    int routineId = generatedKeys.getInt(1);
-                    routine.setId(routineId);
-
-                    // Guardar ejercicios configurados
-                    try (PreparedStatement configStmt = connection.prepareStatement(insertConfiguredExerciseQuery)) {
-                        for (ConfiguredExercise configExercise : routine.getConfiguredExercises()) {
-                            configExercise.setRoutine(routine);  // Asociar con la rutina actual
-
-                            configStmt.setInt(1, configExercise.getOrderIndex());
-                            configStmt.setInt(2, configExercise.getRepetitions());
-                            configStmt.setInt(3, configExercise.getSeries());
-                            configStmt.setInt(4, configExercise.getExercise().getId());
-                            configStmt.setInt(5, routineId);
-                            configStmt.addBatch();
-                        }
-                        configStmt.executeBatch();
-                    }
-                }
-                connection.commit();
-            } catch (SQLException e) {
-                connection.rollback();
-                throw new DatabaseOperationException("Error saving routine and exercises", e);
+            if (affectedRows == 0) {
+                throw new SQLException("Error al guardar la rutina, no se pudo insertar.");
             }
+
+            // Obtener el ID generado
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    routine.setId(generatedKeys.getInt(1));
+                } else {
+                    throw new SQLException("Error al guardar la rutina, no se generó un ID.");
+                }
+            }
+            return routine;
+
         } catch (SQLException e) {
-            throw new DatabaseOperationException("Database connection error", e);
+            throw new DatabaseOperationException("Error al guardar la rutina", e);
         }
     }
 
@@ -192,7 +177,7 @@ public class RoutineRepositoryImpl implements RoutineRepository {
 
     @Override
     public List<Routine> findByTrainerId(int trainerId) throws DatabaseOperationException {
-        String query = "SELECT id, name, description, duration FROM Routines WHERE trainer_id = ?";
+        String query = "SELECT id, name, description, duration, difficultyLevel, trainingType  FROM Routines WHERE trainer_id = ?";
 
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -206,7 +191,9 @@ public class RoutineRepositoryImpl implements RoutineRepository {
                             resultSet.getString("name"),
                             resultSet.getString("description"),
                             resultSet.getInt("duration"),
-                            null, null, null
+                            Routine.DifficultyLevel.valueOf(resultSet.getString("difficultyLevel")),
+                            Routine.TrainingType.valueOf(resultSet.getString("trainingType")),
+                            null
                     );
                     routines.add(routine);
                 }

@@ -13,6 +13,8 @@
             <TableColumn text="Nombre" fx:id="nameColumn" prefWidth="150"/>
             <TableColumn text="Descripción" fx:id="descriptionColumn" prefWidth="250"/>
             <TableColumn text="Duración" fx:id="durationColumn" prefWidth="100"/>
+            <TableColumn text="Dificultad" fx:id="difficultyLevelColumn" prefWidth="100"/>
+            <TableColumn text="Tipo" fx:id="trainingTypeColumn" prefWidth="100"/>
         </columns>
     </TableView>
 

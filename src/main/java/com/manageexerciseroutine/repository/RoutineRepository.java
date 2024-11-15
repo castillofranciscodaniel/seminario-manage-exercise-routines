@@ -8,7 +8,7 @@ import java.util.List;
 public interface RoutineRepository {
 
     // Método para crear una nueva rutina
-    void save(Routine routine) throws DatabaseOperationException;
+    Routine save(Routine routine) throws DatabaseOperationException;
 
     // Método para obtener todas las rutinas
     List<Routine> findAll(int userId) throws DatabaseOperationException;

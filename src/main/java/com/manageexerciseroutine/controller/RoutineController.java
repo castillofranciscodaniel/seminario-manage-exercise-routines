@@ -4,8 +4,11 @@ import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.ConfiguredExercise;
 import com.manageexerciseroutine.model.Routine;
 import com.manageexerciseroutine.model.Trainer;
+import com.manageexerciseroutine.service.ConfiguredExerciseService;
 import com.manageexerciseroutine.service.RoutineService;
 import com.manageexerciseroutine.service.TrainerService;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,16 +17,22 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 public class RoutineController {
 
     private final RoutineService routineService = new RoutineService();
     private final TrainerService trainerService = new TrainerService();
+    private final ConfiguredExerciseService configuredExerciseService = new ConfiguredExerciseService();
+
     private Trainer trainer;  // Cambiado para cargar el objeto completo desde el ID
-    private Routine routineToEdit;
+
+    @Getter
+    private Routine routine;
     private final ObservableList<ConfiguredExercise> exercises = FXCollections.observableArrayList();
 
 
@@ -60,49 +69,86 @@ public class RoutineController {
 
     public RoutineController(int trainerId, Routine routineToEdit) {
         this(trainerId);
-        this.routineToEdit = routineToEdit;
+        System.out.println("trainerId: " + trainerId + ", routineToEdit: " + routineToEdit);
+        this.routine = routineToEdit == null ? new Routine() : routineToEdit;
     }
 
     @FXML
     public void initialize() {
+        // Poblar los ComboBox con los valores correspondientes
         difficultyLevelComboBox.setItems(FXCollections.observableArrayList(
-                Arrays.stream(Routine.DifficultyLevel.values()).map(Enum::name).toList())
-        );
-
+                Arrays.stream(Routine.DifficultyLevel.values()).map(Enum::name).toList()  // Enum de nivel de dificultad
+        ));
         trainingTypeComboBox.setItems(FXCollections.observableArrayList(
-                        Arrays.stream(Routine.TrainingType.values()).map(Enum::name).toList()
-                )
-        );
+                Arrays.stream(Routine.TrainingType.values()).map(Enum::name).toList()  // Enum de tipo de entrenamiento
+        ));
 
-        if (routineToEdit != null) {
-            nameField.setText(routineToEdit.getName());
-            descriptionField.setText(routineToEdit.getDescription());
-            durationField.setText(String.valueOf(routineToEdit.getDuration()));
-            difficultyLevelComboBox.setValue(routineToEdit.getDifficultyLevel().name());
-            trainingTypeComboBox.setValue(routineToEdit.getTrainingType().name());
+        if (routine != null) {
+            nameField.setText(routine.getName());
+            descriptionField.setText(routine.getDescription());
+            durationField.setText(String.valueOf(routine.getDuration()));
+
+            // Asignar valores a los ComboBox solo si no son null
+            if (routine.getDifficultyLevel() != null) {
+                difficultyLevelComboBox.setValue(routine.getDifficultyLevel().name());
+            }
+            if (routine.getTrainingType() != null) {
+                trainingTypeComboBox.setValue(routine.getTrainingType().name());
+            }
+
+            // mostrar los ejercicios configurados de la rutina
+            // Configura las columnas de la tabla
+            exerciseNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getExercise().getName()));
+            repetitionsColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getRepetitions()).asObject());
+            seriesColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getSeries()).asObject());
+            restColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getRest()).asObject());
+
+            // Configura la tabla para usar la lista ObservableList
+            configuredExercisesTable.setItems(exercises);
+
+            // Cargar los ejercicios configurados solo si la rutina ya existe
+            if (routine != null && routine.getId() != 0) {
+                loadConfiguredExercises();
+            }
+        }
+    }
+
+    private void loadConfiguredExercises() {
+        try {
+            List<ConfiguredExercise> loadedExercises = configuredExerciseService.findExercisesByRoutineId(routine.getId());
+            exercises.setAll(loadedExercises);  // Cargar los ejercicios en la lista Observable
+        } catch (DatabaseOperationException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "No se pudieron cargar los ejercicios configurados: " + e.getMessage());
         }
     }
 
     @FXML
-    private void handleSaveRoutine() {
-        // Implementación para guardar la rutina (creación o actualización)
-        String name = nameField.getText();
-        String description = descriptionField.getText();
-        int duration = Integer.parseInt(durationField.getText());
-        String difficultyLevel = difficultyLevelComboBox.getValue();
-        String trainingType = trainingTypeComboBox.getValue();
+    public void handleSaveRoutine() {
+        try {
+            String name = nameField.getText();
+            routine.setName(name);
+            routine.setTrainer(trainer);
+            routine.setDescription(descriptionField.getText());
+            routine.setDuration(Integer.parseInt(durationField.getText()));
+            routine.setDifficultyLevel(Routine.DifficultyLevel.valueOf(difficultyLevelComboBox.getValue()));
+            routine.setTrainingType(Routine.TrainingType.valueOf(trainingTypeComboBox.getValue()));
 
-        Routine routine = routineToEdit == null ? new Routine() : routineToEdit;
-        routine.setName(name);
-        routine.setDescription(description);
-        routine.setDuration(duration);
-        routine.setDifficultyLevel(Routine.DifficultyLevel.valueOf(difficultyLevel));
-        routine.setTrainingType(Routine.TrainingType.valueOf(trainingType));
-        routine.setTrainer(trainer);
 
-        // Guardar la rutina en la base de datos y cerrar la ventana
-        // (La implementación de guardado debe realizarse aquí o en un servicio)
-        closeWindow();
+            if (routine.getId() == 0) {
+                // Crear nueva rutina
+                routine = routineService.saveRoutineWithExercises(routine, exercises);
+            } else {
+                // Editar rutina existente
+                routineService.updateRoutineWithExercises(routine, exercises);
+            }
+            showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Rutina guardada exitosamente!");
+
+            Stage stage = (Stage) nameField.getScene().getWindow();
+            stage.close();
+
+        } catch (DatabaseOperationException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo guardar la rutina: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -112,10 +158,15 @@ public class RoutineController {
     }
 
 
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
         alert.setTitle(title);
+        alert.setHeaderText(null);  // Deja el encabezado vacío si no es necesario
         alert.setContentText(message);
+
+        ButtonType buttonTypeOk = new ButtonType("Aceptar", ButtonBar.ButtonData.OK_DONE);  // Configura el botón "Aceptar"
+        alert.getButtonTypes().setAll(buttonTypeOk);  // Añade el botón al cuadro de diálogo
+
         alert.showAndWait();
     }
 
@@ -123,7 +174,7 @@ public class RoutineController {
     public void handleAddExercise() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/configured_exercise_form.fxml"));
-            ConfiguredExerciseController controller = new ConfiguredExerciseController(trainer.getId(), routineToEdit);
+            ConfiguredExerciseController controller = new ConfiguredExerciseController(trainer.getId(), routine);
             loader.setController(controller);
 
             Parent root = loader.load();
@@ -135,8 +186,8 @@ public class RoutineController {
             // Después de que el usuario guarda el ejercicio, lo añadimos a la lista
             ConfiguredExercise newExercise = controller.getConfiguredExercise();
             if (newExercise != null) {
-                exercises.add(newExercise);
-                configuredExercisesTable.refresh();
+                exercises.add(newExercise);  // `exercises` es la lista observable vinculada a la tabla
+                configuredExercisesTable.refresh();  // Refrescar la tabla para mostrar el nuevo ejercicio
             }
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de configuración de ejercicios.");

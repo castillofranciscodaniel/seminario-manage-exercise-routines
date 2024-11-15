@@ -40,6 +40,13 @@ public class RoutineABMController {
     @FXML
     private TableColumn<Routine, Integer> durationColumn;
 
+    @FXML
+    private TableColumn<Routine, String> difficultyLevelColumn;
+
+    @FXML
+    private TableColumn<Routine, String> trainingTypeColumn;
+
+
     public RoutineABMController(int trainerId) {
         this.trainerId = trainerId;
     }
@@ -50,6 +57,18 @@ public class RoutineABMController {
         descriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
         durationColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getDuration()).asObject());
 
+        difficultyLevelColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(
+                        cellData.getValue().getDifficultyLevel() != null ? cellData.getValue().getDifficultyLevel().name() : ""
+                )
+        );
+
+        trainingTypeColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(
+                        cellData.getValue().getTrainingType() != null ? cellData.getValue().getTrainingType().name() : ""
+                )
+        );
+
         loadRoutines();
     }
 
@@ -59,16 +78,17 @@ public class RoutineABMController {
             routineData.setAll(routines);
             routineTable.setItems(routineData);
         } catch (DatabaseOperationException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo cargar las rutinas.");
+            showAlert(Alert.AlertType.ERROR, "Error", "No se pudieron cargar las rutinas.");
         }
     }
+
     @FXML
-    private void handleCreateRoutine() {
+    public void handleCreateRoutine() {
         openRoutineDialog(null);
     }
 
     @FXML
-    private void handleEditRoutine() {
+    public void handleEditRoutine() {
         Routine selectedRoutine = routineTable.getSelectionModel().getSelectedItem();
         if (selectedRoutine != null) {
             openRoutineDialog(selectedRoutine);
@@ -80,19 +100,27 @@ public class RoutineABMController {
     private void openRoutineDialog(Routine routineToEdit) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/create_routine_view.fxml"));
-            RoutineController controller = routineToEdit == null ? new RoutineController(trainerId) : new RoutineController(trainerId, routineToEdit);
+            RoutineController controller = new RoutineController(trainerId, routineToEdit);
             loader.setController(controller);
-            Parent root = loader.load();
 
+            Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle(routineToEdit == null ? "Crear Rutina" : "Editar Rutina");
-            stage.setScene(new Scene(root, 600, 400));
-            stage.setMaximized(true); // Maximizar la ventana
+            stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            loadRoutines();
+            // Después de cerrar el diálogo, verificar si se guardó o editó una rutina
+            Routine savedRoutine = controller.getRoutine(); // Obtener la rutina guardada desde el controlador
+            if (savedRoutine != null) {
+                if (routineToEdit == null) {
+                    routineData.add(savedRoutine); // Agregar una nueva rutina
+                } else {
+                    routineTable.refresh(); // Refrescar la tabla si se editó una rutina existente
+                }
+            }
+
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error al abrir la ventana de rutina: " + e.getMessage());
             showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de rutina.");
         }
     }
