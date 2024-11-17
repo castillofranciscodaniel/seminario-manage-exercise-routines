@@ -8,11 +8,11 @@
 
     <TableView fx:id="exerciseTable" prefWidth="600">
         <columns>
-            <TableColumn text="Exercise Name" fx:id="nameColumn" prefWidth="150"/>
+            <TableColumn text="Exercise Name" fx:id="nameColumn" prefWidth="250"/>
             <TableColumn text="Description" fx:id="descriptionColumn" prefWidth="250"/>
-            <TableColumn text="Duration" fx:id="durationColumn" prefWidth="100"/>
-            <TableColumn text="Type" fx:id="typeColumn" prefWidth="150"/>
-            <TableColumn text="Trainer" fx:id="trainerColumn" prefWidth="150"/>
+            <TableColumn text="Duration" fx:id="durationColumn" prefWidth="250"/>
+            <TableColumn text="Type" fx:id="typeColumn" prefWidth="250"/>
+            <TableColumn text="Trainer" fx:id="trainerColumn" prefWidth="250"/>
         </columns>
     </TableView>
 

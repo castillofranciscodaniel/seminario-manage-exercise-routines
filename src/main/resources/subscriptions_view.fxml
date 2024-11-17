@@ -8,12 +8,12 @@
 
     <TableView fx:id="subscriptionTable">
         <columns>
-            <TableColumn fx:id="routineNameColumn" text="Nombre de Rutina"/>
-            <TableColumn fx:id="descriptionColumn" text="Descripción"/>
-            <TableColumn fx:id="durationColumn" text="Duración (min)"/>
-            <TableColumn fx:id="difficultyLevelColumn" text="Nivel de Dificultad"/>
-            <TableColumn fx:id="trainingTypeColumn" text="Tipo de Entrenamiento"/>
-            <TableColumn fx:id="trainerNameColumn" text="Entrenador"/>
+            <TableColumn fx:id="routineNameColumn" text="Nombre de Rutina" prefWidth="250"/>
+            <TableColumn fx:id="descriptionColumn" text="Descripción" prefWidth="250"/>
+            <TableColumn fx:id="durationColumn" text="Duración (min)" prefWidth="250"/>
+            <TableColumn fx:id="difficultyLevelColumn" text="Nivel de Dificultad" prefWidth="250"/>
+            <TableColumn fx:id="trainingTypeColumn" text="Tipo de Entrenamiento" prefWidth="250"/>
+            <TableColumn fx:id="trainerNameColumn" text="Entrenador" prefWidth="250"/>
         </columns>
     </TableView>
 

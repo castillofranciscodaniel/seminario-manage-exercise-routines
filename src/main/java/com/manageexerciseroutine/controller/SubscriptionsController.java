@@ -97,7 +97,8 @@ public class SubscriptionsController {
         Parent root = loader.load();
         Stage stage = new Stage();
         stage.setTitle("Ejercicios configurados");
-        stage.setScene(new javafx.scene.Scene(root, 600, 400));
+        stage.setScene(new Scene(root, 400, 400));
+        stage.setMaximized(true); // Maximizar la ventana
         stage.show();
     }
 

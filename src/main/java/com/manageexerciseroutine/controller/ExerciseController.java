@@ -102,6 +102,10 @@ public class ExerciseController {
     @FXML
     public void handleSaveExercise() {
         try {
+            if (exerciseToEdit == null) {
+                exerciseToEdit = new Exercise();
+                exerciseToEdit.setTrainer(trainer);
+            }
             exerciseToEdit.setName(nameField.getText());
             exerciseToEdit.setDescription(descriptionField.getText());
             exerciseToEdit.setDuration(Integer.parseInt(durationField.getText()));
