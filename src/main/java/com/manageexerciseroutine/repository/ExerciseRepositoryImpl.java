@@ -1,6 +1,6 @@
 package com.manageexerciseroutine.repository;
 
-import com.manageexerciseroutine.configuration.DatabaseConnection;
+import com.manageexerciseroutine.conexiónBD.DatabaseConnection;
 import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Exercise;
 import com.manageexerciseroutine.model.Trainer;

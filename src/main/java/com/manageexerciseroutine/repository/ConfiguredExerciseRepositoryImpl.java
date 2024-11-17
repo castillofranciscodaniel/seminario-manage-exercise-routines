@@ -1,12 +1,10 @@
 package com.manageexerciseroutine.repository;
 
-import com.manageexerciseroutine.configuration.DatabaseConnection;
+import com.manageexerciseroutine.conexiónBD.DatabaseConnection;
 import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.ConfiguredExercise;
 import com.manageexerciseroutine.model.Exercise;
 import com.manageexerciseroutine.model.Routine;
-import lombok.extern.log4j.Log4j;
-import lombok.extern.log4j.Log4j2;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

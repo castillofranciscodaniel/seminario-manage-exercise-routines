@@ -1,4 +1,4 @@
-package com.manageexerciseroutine.configuration;
+package com.manageexerciseroutine.conexiónBD;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
