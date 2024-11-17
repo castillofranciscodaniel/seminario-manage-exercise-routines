@@ -2,6 +2,7 @@ package com.manageexerciseroutine.controller;
 
 import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Exercise;
+import com.manageexerciseroutine.model.Routine;
 import com.manageexerciseroutine.model.Trainer;
 import com.manageexerciseroutine.service.ExerciseService;
 import javafx.collections.FXCollections;
@@ -12,6 +13,7 @@ import javafx.stage.Stage;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -56,7 +58,6 @@ public class ExerciseController {
 
     private Exercise exerciseToEdit; // Ejercicio a editar, si es aplicable
 
-
     private final ObservableList<Exercise> exerciseData = FXCollections.observableArrayList();
 
     private final ExerciseService exerciseService;
@@ -91,47 +92,35 @@ public class ExerciseController {
 
     @FXML
     public void initialize() throws DatabaseOperationException {
-
         typeComboBox.setItems(FXCollections.observableArrayList(
-                "Strength", "Yoga", "Cardio", "Core", "Full-body"
+                Arrays.stream(Routine.TrainingType.values()).map(Enum::name).toList()
         ));
+
+        typeComboBox.setValue(Routine.TrainingType.STRENGTH.name());
     }
 
     @FXML
     public void handleSaveExercise() {
         try {
-            // Capturar datos de la interfaz
-            String name = nameField.getText();
-            String description = descriptionField.getText();
-            int duration = Integer.parseInt(durationField.getText());
-            String type = typeComboBox.getValue();
-
-            if (type == null) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Por favor selecciona un tipo de ejercicio.");
-                return;
-            }
-
-            if (exerciseToEdit == null) {
-                exerciseToEdit = new Exercise();
-            }
-
-            exerciseToEdit.setName(name);
-            exerciseToEdit.setDescription(description);
-            exerciseToEdit.setDuration(duration);
-            exerciseToEdit.setType(type);
-            exerciseToEdit.setTrainer(trainer);
+            exerciseToEdit.setName(nameField.getText());
+            exerciseToEdit.setDescription(descriptionField.getText());
+            exerciseToEdit.setDuration(Integer.parseInt(durationField.getText()));
+            exerciseToEdit.setType(typeComboBox.getValue());
 
             exerciseService.saveExercise(exerciseToEdit);
+            updated = true;
 
-            updated = true;  // Marcar como actualizado
-            showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Ejercicio guardado exitosamente!");
-
+            showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Ejercicio actualizado exitosamente!");
             Stage stage = (Stage) nameField.getScene().getWindow();
             stage.close();
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Error", "Duración inválida. Por favor ingresa un número.");
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "No se pudo guardar el ejercicio: " + e.getMessage());
+        } catch (DatabaseOperationException e) {
+            if (e.getMessage().contains("No se puede eliminar el ejercicio porque está asociado a una rutina")) {
+                showAlert(Alert.AlertType.ERROR, "Error", "No se puede eliminar el ejercicio porque está asociado a una rutina");
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", "No se pudo guardar el ejercicio: " + e.getMessage());
+            }
         }
     }
 

@@ -3,7 +3,6 @@ package com.manageexerciseroutine.repository;
 import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.ConfiguredExercise;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface ConfiguredExerciseRepository {
@@ -19,4 +18,6 @@ public interface ConfiguredExerciseRepository {
 
     // Eliminar ejercicio configurado
     void delete(ConfiguredExercise configuredExercise) throws DatabaseOperationException;
+
+    void deleteByRoutineId(int id);
 }

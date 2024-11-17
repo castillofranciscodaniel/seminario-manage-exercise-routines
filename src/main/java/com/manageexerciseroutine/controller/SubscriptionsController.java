@@ -84,14 +84,14 @@ public class SubscriptionsController {
     }
 
     private void showConfiguredExercises(Subscription subscription) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/configured_exercises_view.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/configured_exercises_abm_view.fxml"));
 
         // Crear el servicio ConfiguredExerciseService
         ConfiguredExerciseRepository configuredExerciseRepository = new ConfiguredExerciseRepositoryImpl();
         ConfiguredExerciseService configuredExerciseService = new ConfiguredExerciseService(configuredExerciseRepository);
 
         // Crear el controlador manualmente y pasarle el servicio y la suscripción seleccionada
-        ConfiguredExercisesController controller = new ConfiguredExercisesController(configuredExerciseService, subscription);
+        ConfiguredExercisesABMController controller = new ConfiguredExercisesABMController(configuredExerciseService, subscription);
         loader.setController(controller);
 
         Parent root = loader.load();

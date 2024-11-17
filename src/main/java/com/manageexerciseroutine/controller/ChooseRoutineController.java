@@ -13,6 +13,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import lombok.Setter;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -36,18 +37,12 @@ public class ChooseRoutineController {
     private TableColumn<Routine, String> trainerNameColumn;
 
     private final ObservableList<Routine> routineData = FXCollections.observableArrayList();
+    @Setter
     private SubscriptionService subscriptionService;
+    @Setter
     private int userId; // ID del usuario actual
 
     private final RoutineService routineService = new RoutineService();
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public void setSubscriptionService(SubscriptionService subscriptionService) {
-        this.subscriptionService = subscriptionService;
-    }
 
     @FXML
     public void initialize() {

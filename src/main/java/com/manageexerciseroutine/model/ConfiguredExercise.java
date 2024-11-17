@@ -15,10 +15,11 @@ public class ConfiguredExercise {
     private Routine routine;
     private int rest;
 
-    public ConfiguredExercise(int orderIndex, int repetitions, int series, Exercise exercise, Routine routine) {
+    public ConfiguredExercise(int orderIndex, int repetitions, int series, int rest, Exercise exercise, Routine routine) {
         this.orderIndex = orderIndex;
         this.repetitions = repetitions;
         this.series = series;
+        this.rest = rest;
         this.exercise = exercise;
         this.routine = routine;
     }

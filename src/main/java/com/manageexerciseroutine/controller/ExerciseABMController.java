@@ -17,7 +17,6 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +38,7 @@ public class ExerciseABMController {
     @FXML
     private TableColumn<Exercise, String> typeColumn;
 
+
     private final TrainerService trainerService; // Instancia del servicio de entrenadores
 
     private final ObservableList<Exercise> exerciseData = FXCollections.observableArrayList();
@@ -59,18 +59,31 @@ public class ExerciseABMController {
     }
 
     @FXML
-    public void initialize() throws SQLException {
-        // Inicializar columnas de la tabla
+    public void initialize() {
         nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         descriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
         durationColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getDuration()).asObject());
         typeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getType()));
 
-        // Cargar ejercicios del sistema (en este caso, no filtramos por trainerId, ya que todos los ejercicios son accesibles)
-        List<Exercise> exercises = exerciseService.findAllExercisesByTrainerId(trainerId);
-        exerciseData.addAll(exercises);
-        exerciseTable.setItems(exerciseData);
+        loadExercises();
     }
+
+    private void loadExercises() {
+        try {
+            // Limpiar la lista actual
+            exerciseData.clear();
+
+            // Obtener datos actualizados desde el servicio
+            List<Exercise> exercises = exerciseService.findAllExercisesByTrainerId(trainerId);
+            exerciseData.addAll(exercises);
+
+            // Establecer los datos actualizados en la tabla
+            exerciseTable.setItems(exerciseData);
+        } catch (DatabaseOperationException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "No se pudieron cargar los ejercicios: " + e.getMessage());
+        }
+    }
+
 
     @FXML
     public void handleCreateExercise() throws DatabaseOperationException {
@@ -85,10 +98,9 @@ public class ExerciseABMController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            // Si el ejercicio fue creado, añadirlo a la lista
             if (controller.isUpdated()) {
-                exerciseData.add(controller.getExercise());
-                exerciseTable.refresh();
+                // Recargar ejercicios después de crear uno nuevo
+                loadExercises();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -96,34 +108,30 @@ public class ExerciseABMController {
         }
     }
 
-
     @FXML
     public void handleEditExercise() throws DatabaseOperationException {
         Exercise selectedExercise = exerciseTable.getSelectionModel().getSelectedItem();
         if (selectedExercise != null) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/edit_exercise_view.fxml"));
-
-                // Configurar el controlador con el ejercicio a editar
                 ExerciseController controller = new ExerciseController(trainer);
                 loader.setController(controller);
 
                 Parent root = loader.load();
-                controller.setExerciseToEdit(selectedExercise);  // Pasar el ejercicio a editar
+                controller.setExerciseToEdit(selectedExercise);
 
-                // Mostrar la ventana de edición
                 Stage stage = new Stage();
                 stage.setTitle("Editar Ejercicio");
                 stage.setScene(new Scene(root));
                 stage.showAndWait();
 
-                // Verificar si el ejercicio ha sido actualizado
                 if (controller.isUpdated()) {
-                    exerciseTable.refresh(); // Refrescar la tabla con el ejercicio actualizado
+                    // Recargar ejercicios después de editar
+                    loadExercises();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de edición de ejercicio.");
+                showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de edición.");
             }
         } else {
             showAlert(Alert.AlertType.WARNING, "Selección vacía", "Por favor selecciona un ejercicio para editar.");
@@ -144,7 +152,11 @@ public class ExerciseABMController {
                     exerciseTable.refresh(); // Refrescar la tabla
                     showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Ejercicio eliminado!");
                 } catch (DatabaseOperationException e) {
-                    showAlert(Alert.AlertType.ERROR, "Error", "No se pudo eliminar el ejercicio.");
+                    if (e.getMessage().contains("No se puede eliminar el ejercicio porque está asociado a una rutina")) {
+                        showAlert(Alert.AlertType.ERROR, "Error", "No se puede eliminar el ejercicio porque está asociado a una rutina");
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Error", "No se pudo guardar el ejercicio: " + e.getMessage());
+                    }
                 }
             }
         } else {

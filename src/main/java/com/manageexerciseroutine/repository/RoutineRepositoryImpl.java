@@ -9,8 +9,11 @@ import com.manageexerciseroutine.model.Trainer;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class RoutineRepositoryImpl implements RoutineRepository {
+
+    Logger logger = Logger.getLogger(RoutineRepositoryImpl.class.getName());
 
     // RoutineRepositoryImpl.java
     @Override
@@ -60,6 +63,7 @@ public class RoutineRepositoryImpl implements RoutineRepository {
                 }
             }
         } catch (SQLException e) {
+            logger.info("findAll. Error executing query. error: " + e.getMessage());
             throw new DatabaseOperationException("Error executing query to fetch routines", e);
         }
 
@@ -98,6 +102,7 @@ public class RoutineRepositoryImpl implements RoutineRepository {
             return routine;
 
         } catch (SQLException e) {
+            logger.info("save. Error executing query. error: " + e.getMessage());
             throw new DatabaseOperationException("Error al guardar la rutina", e);
         }
     }
@@ -117,6 +122,7 @@ public class RoutineRepositoryImpl implements RoutineRepository {
             statement.setInt(7, routine.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
+            logger.info("update. Error executing query. error: " + e.getMessage());
             throw new DatabaseOperationException("Error executing query", e);
         }
     }
@@ -130,6 +136,7 @@ public class RoutineRepositoryImpl implements RoutineRepository {
             statement.setInt(1, routine.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
+            logger.info("delete. Error executing query. error: " + e.getMessage());
             throw new DatabaseOperationException("Error executing query", e);
         }
     }
@@ -170,6 +177,7 @@ public class RoutineRepositoryImpl implements RoutineRepository {
                 }
             }
         } catch (SQLException e) {
+            logger.info("findById. Error executing query. error: " + e.getMessage());
             throw new DatabaseOperationException("Error executing query", e);
         }
         return null;  // Retorna null si no se encuentra la rutina con el id proporcionado
@@ -200,6 +208,7 @@ public class RoutineRepositoryImpl implements RoutineRepository {
                 return routines;
             }
         } catch (SQLException e) {
+            logger.info("findByTrainerId. Error executing query. error: " + e.getMessage());
             throw new DatabaseOperationException("Error executing query", e);
         }
     }

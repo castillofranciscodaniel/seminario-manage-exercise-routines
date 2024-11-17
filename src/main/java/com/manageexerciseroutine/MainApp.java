@@ -1,10 +1,10 @@
 package com.manageexerciseroutine;
 
 import com.manageexerciseroutine.controller.LoginController;
-import com.manageexerciseroutine.repository.TrainerRepositoryImpl;
 import com.manageexerciseroutine.repository.SubscriberRepositoryImpl;
-import com.manageexerciseroutine.service.TrainerService;
+import com.manageexerciseroutine.repository.TrainerRepositoryImpl;
 import com.manageexerciseroutine.service.SubscriberService;
+import com.manageexerciseroutine.service.TrainerService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

@@ -4,7 +4,6 @@ import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Subscriber;
 import com.manageexerciseroutine.repository.SubscriberRepositoryImpl;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class SubscriberService {

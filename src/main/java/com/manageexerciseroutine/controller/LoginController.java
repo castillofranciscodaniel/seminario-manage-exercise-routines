@@ -84,7 +84,8 @@ public class LoginController {
         Parent root = loader.load();
         Stage stage = new Stage();
         stage.setTitle("Menú del entrenador");
-        stage.setScene(new Scene(root, 400, 200));
+        stage.setScene(new Scene(root, 400, 400));
+        stage.setMaximized(true); // Maximizar la ventana
         stage.show();
     }
 
@@ -133,10 +134,11 @@ public class LoginController {
             Parent root = loader.load();
 
 
-            Stage registerStage = new Stage();
-            registerStage.setTitle("Registro de Usuario");
-            registerStage.setScene(new Scene(root));
-            registerStage.show();
+            Stage stage = new Stage();
+            stage.setTitle("Registro de Usuario");
+            stage.setScene(new Scene(root, 400, 400));
+            stage.setMaximized(true); // Maximizar la ventana
+            stage.show();
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de registro.");

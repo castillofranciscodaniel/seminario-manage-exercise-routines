@@ -102,7 +102,7 @@ public class RoutineController {
             repetitionsColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getRepetitions()).asObject());
             seriesColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getSeries()).asObject());
             restColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getRest()).asObject());
-
+            orderColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getOrderIndex()).asObject());
             // Configura la tabla para usar la lista ObservableList
             configuredExercisesTable.setItems(exercises);
 
@@ -147,6 +147,7 @@ public class RoutineController {
             stage.close();
 
         } catch (DatabaseOperationException e) {
+            System.out.println("Error al guardar la rutina: " + e.getMessage());
             showAlert(Alert.AlertType.ERROR, "Error", "No se pudo guardar la rutina: " + e.getMessage());
         }
     }
@@ -180,7 +181,8 @@ public class RoutineController {
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle("Agregar Ejercicio Configurado");
-            stage.setScene(new Scene(root));
+            stage.setScene(new Scene(root, 400, 400));
+            stage.setMaximized(true); // Maximizar la ventana
             stage.showAndWait();
 
             // Después de que el usuario guarda el ejercicio, lo añadimos a la lista
@@ -190,6 +192,7 @@ public class RoutineController {
                 configuredExercisesTable.refresh();  // Refrescar la tabla para mostrar el nuevo ejercicio
             }
         } catch (IOException e) {
+            System.out.println("Error al abrir la ventana de configuración de ejercicios: " + e.getMessage());
             showAlert(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de configuración de ejercicios.");
         }
     }

@@ -5,11 +5,17 @@ import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Exercise;
 import com.manageexerciseroutine.model.Trainer;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ExerciseRepositoryImpl implements ExerciseRepository {
+
+    Logger logger = Logger.getLogger(ExerciseRepositoryImpl.class.getName());
 
     // Método para encontrar todos los ejercicios por trainerId
     public List<Exercise> findAllByTrainerId(int trainerId) throws DatabaseOperationException {
@@ -50,6 +56,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
                 }
             }
         } catch (SQLException e) {
+            logger.info("findAllByTrainerId. Error executing query. error" + e.getMessage());
             throw new DatabaseOperationException("Error executing query", e);
         }
         return exercises;
@@ -70,6 +77,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
 
             statement.executeUpdate();
         } catch (SQLException e) {
+            logger.info("save. Error executing query. error" + e.getMessage());
             throw new DatabaseOperationException("Error executing query", e);
         }
     }
@@ -90,6 +98,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
 
             statement.executeUpdate();
         } catch (SQLException e) {
+            logger.info("update. Error executing query. error" + e.getMessage());
             throw new DatabaseOperationException("Error executing query", e);
         }
     }
@@ -104,7 +113,11 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
             statement.setInt(1, exercise.getId());
 
             statement.executeUpdate();
-        }  catch (SQLException e) {
+        } catch (SQLException e) {
+            logger.info("delete. Error executing query. error: " + e.getMessage());
+            if (e.getMessage().contains("foreign key constraint fails")) {
+                throw new DatabaseOperationException("No se puede eliminar el ejercicio porque está asociado a una rutina", e);
+            }
             throw new DatabaseOperationException("Error executing query", e);
         }
     }

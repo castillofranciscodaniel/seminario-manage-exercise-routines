@@ -14,7 +14,7 @@ import javafx.scene.control.TableView;
 
 import java.util.List;
 
-public class ConfiguredExercisesController {
+public class ConfiguredExercisesABMController {
 
     @FXML
     private TableView<ConfiguredExercise> exerciseTable;
@@ -31,12 +31,15 @@ public class ConfiguredExercisesController {
     @FXML
     private TableColumn<ConfiguredExercise, Integer> seriesColumn;
 
+    @FXML
+    private TableColumn<ConfiguredExercise, Integer> restColumn;
+
     private final ObservableList<ConfiguredExercise> exerciseData = FXCollections.observableArrayList();
     private final ConfiguredExerciseService configuredExerciseService;
     private final Subscription subscription;
 
     // Constructor con inyección del servicio y la suscripción
-    public ConfiguredExercisesController(ConfiguredExerciseService configuredExerciseService, Subscription subscription) {
+    public ConfiguredExercisesABMController(ConfiguredExerciseService configuredExerciseService, Subscription subscription) {
         this.configuredExerciseService = configuredExerciseService;
         this.subscription = subscription;
     }
@@ -48,6 +51,7 @@ public class ConfiguredExercisesController {
         orderColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getOrderIndex()).asObject());
         repetitionsColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getRepetitions()).asObject());
         seriesColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getSeries()).asObject());
+        restColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getRest()).asObject());
 
         // Cargar los ejercicios configurados para la suscripción seleccionada
         List<ConfiguredExercise> exercises = configuredExerciseService.findExercisesByRoutineId(subscription.getRoutine().getId());

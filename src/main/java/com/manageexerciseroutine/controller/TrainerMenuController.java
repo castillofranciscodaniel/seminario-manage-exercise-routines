@@ -1,10 +1,10 @@
 package com.manageexerciseroutine.controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
-import javafx.stage.Stage;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 public class TrainerMenuController {
 
@@ -27,7 +27,8 @@ public class TrainerMenuController {
         Parent root = loader.load();
         Stage stage = new Stage();
         stage.setTitle("Gestión del ejercicio");
-        stage.setScene(new Scene(root, 600, 400));
+        stage.setScene(new Scene(root, 400, 400));
+        stage.setMaximized(true); // Maximizar la ventana
         stage.show();
     }
 
@@ -43,7 +44,8 @@ public class TrainerMenuController {
         Parent root = loader.load();
         Stage stage = new Stage();
         stage.setTitle("Gestión de rutina");
-        stage.setScene(new Scene(root, 600, 400));
+        stage.setScene(new Scene(root, 400, 400));
+        stage.setMaximized(true); // Maximizar la ventana
         stage.show();
     }
 }

@@ -4,7 +4,6 @@ import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Trainer;
 import com.manageexerciseroutine.repository.TrainerRepositoryImpl;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class TrainerService {

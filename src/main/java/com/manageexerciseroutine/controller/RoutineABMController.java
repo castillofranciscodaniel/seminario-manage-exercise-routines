@@ -2,7 +2,6 @@ package com.manageexerciseroutine.controller;
 
 import com.manageexerciseroutine.exeptions.DatabaseOperationException;
 import com.manageexerciseroutine.model.Routine;
-import com.manageexerciseroutine.model.Trainer;
 import com.manageexerciseroutine.service.RoutineService;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -106,7 +105,8 @@ public class RoutineABMController {
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setTitle(routineToEdit == null ? "Crear Rutina" : "Editar Rutina");
-            stage.setScene(new Scene(root));
+            stage.setScene(new Scene(root, 400, 400));
+            stage.setMaximized(true); // Maximizar la ventana
             stage.showAndWait();
 
             // Después de cerrar el diálogo, verificar si se guardó o editó una rutina
@@ -134,6 +134,8 @@ public class RoutineABMController {
                 try {
                     routineService.deleteRoutine(selectedRoutine);
                     routineData.remove(selectedRoutine);
+                    showAlert(Alert.AlertType.INFORMATION, "Éxito", "¡Rutina eliminada exitosamente!");
+
                 } catch (DatabaseOperationException e) {
                     showAlert(Alert.AlertType.ERROR, "Error", "No se pudo eliminar la rutina.");
                 }
